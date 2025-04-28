@@ -1,15 +1,15 @@
 import Header from '@/components/HeaderComponent'
 import React from 'react'
-import ProjectsPage from './_components/ProjectsPage'
 import BottomHeader from '@/components/BottomHeader'
 import Footer from '@/components/Footer'
+import AuthorPage from './AutherPage'
 
 
 function Projects() {
   return (
     <div>
       <Header/>
-      <ProjectsPage/>
+      <AuthorPage/>
       <BottomHeader/>
       <Footer/>
     </div>

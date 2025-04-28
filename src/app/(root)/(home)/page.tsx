@@ -33,7 +33,7 @@ function HomePage() {
             <CoreTechSection/>
             <SupportSection/>
             <CTASection/>
-            {/* <ChatWidget/> */}
+            <ChatWidget/>
             <BottomHeader/>
             <Footer/>
            

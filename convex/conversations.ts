@@ -55,10 +55,7 @@ export const getMyConversations = query({
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) throw new ConvexError("Unauthorized");
 
-		/* const user = await ctx.db
-			.query("users")
-			.withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
-			.unique(); */
+
 		const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
 
 		const user = await ctx.db
@@ -96,7 +93,6 @@ export const getMyConversations = query({
 					.order("desc")
 					.take(1);
 
-				// return should be in this order, otherwise _id field will be overwritten
 				return {
 					...userDetails,
 					...conversation,
@@ -182,5 +178,64 @@ export const getUserConversation = query({
 				sender: senderDetails ? senderDetails[0] : null,
 			} : null,
 		};
+	},
+});
+
+
+export const createUserConversation = mutation({
+	args: {},
+	handler: async (ctx, args) => {
+		
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new Error("User not authenticated");
+		}
+		const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
+		
+		const currentUser = await ctx.db
+			.query("users")
+			.withIndex("by_tokenIdentifier", (q) =>
+				q.eq("tokenIdentifier", cleanToken)
+			)
+			.unique();
+
+		if (!currentUser) {
+			throw new Error("Current user not found");
+		}
+
+		
+		const admin = await ctx.db
+			.query("users")
+			.filter((q) => q.eq(q.field("name"), "CodeCraft "))
+			.first();
+
+		if (!admin) {
+			throw new Error("Admin user not found");
+		}
+
+
+		const allConversations = await ctx.db.query("conversations").collect();
+
+		const existingConversation = allConversations.find((conv) => {
+			if (conv.isGroup) return false;
+			const participantIds = conv.participants.map((id) => id.toString());
+			return (
+				participantIds.includes(currentUser._id.toString()) &&
+				participantIds.includes(admin._id.toString()) &&
+				participantIds.length === 2
+			);
+		});
+
+		if (existingConversation) {
+			return existingConversation._id;
+		}
+
+		
+		const conversationId = await ctx.db.insert("conversations", {
+			participants: [currentUser._id, admin._id],
+			isGroup: false,
+		});
+
+		return conversationId;
 	},
 });

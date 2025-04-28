@@ -35,9 +35,20 @@ export default defineSchema({
   professionals: defineTable({
     bio: v.string(),
     userId: v.id("users"),
+    image: v.string(),
     designations: v.array(v.id("designations")),
   }),
-
+  blogs: defineTable({
+    title: v.string(),            
+    slug: v.string(),             
+    content: v.string(),          
+    coverImage: v.string(),       // Optional: Cover image URL
+    published: v.boolean(),       // Published or draft
+    authorId: v.id("users"),      // Link to the author's user id (assuming you have a 'users' table)
+    tags: v.optional(v.array(v.string())), // Optional: Tags like ["javascript", "webdev"]
+    createdAt: v.number(),        // Timestamp (Date.now())
+    updatedAt: v.optional(v.number()), // Optional: last update timestamp
+  }),
 
   messages: defineTable({
     conversation: v.id("conversations"),

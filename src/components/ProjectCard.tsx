@@ -53,42 +53,64 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   };
 
   return (
-    <div className="p-4 bg-[#2a2a3a] border border-[#313244] rounded-lg">
-      <div className="flex justify-between items-center">
-        <div>
+    <div className="p-4 bg-[#2a2a3a] border border-[#313244] rounded-lg flex flex-col gap-4">
+      
+      {/* Website Preview */}
+      <div className="aspect-video overflow-hidden rounded-md border border-gray-700 group">
+        <iframe
+          src={project.url}
+          title={project.name}
+          loading="lazy"
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+          className="w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
+        />
+      </div>
+
+      {/* Project Info */}
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
           {editMode ? (
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="bg-[#3a3a4a] text-white rounded-md px-2 py-1"
-            />
+            <>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="bg-[#3a3a4a] text-white rounded-md px-2 py-1 w-full mb-2"
+                placeholder="Project name"
+              />
+              <input
+                type="text"
+                value={newUrl}
+                onChange={(e) => setNewUrl(e.target.value)}
+                className="bg-[#3a3a4a] text-white rounded-md px-2 py-1 w-full"
+                placeholder="Project URL"
+              />
+            </>
           ) : (
-            <h3 className="text-lg font-semibold text-white">{project.name}</h3>
-          )}
-          {editMode ? (
-            <input
-              type="text"
-              value={newUrl}
-              onChange={(e) => setNewUrl(e.target.value)}
-              className="bg-[#3a3a4a] text-white rounded-md px-2 py-1 mt-2"
-            />
-          ) : (
-            <p className="text-sm text-gray-300 mt-2">{project.url}</p>
+            <>
+              <h3 className="text-lg font-semibold text-white truncate">{project.name}</h3>
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-400 hover:underline break-all"
+              >
+                {project.url}
+              </a>
+            </>
           )}
         </div>
-        <div className="flex space-x-3">
+
+        <div className="flex flex-col items-center space-y-2 ml-4">
           {editMode ? (
             <Button
               onClick={handleUpdate}
               className="bg-green-600 hover:bg-green-700"
+              size="icon"
               disabled={isUpdating}
             >
               {isUpdating ? (
-                <>
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
-                </>
+                <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (
                 "Save"
               )}
@@ -97,6 +119,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             <Button
               onClick={() => setEditMode(true)}
               className="bg-yellow-500 hover:bg-yellow-600"
+              size="icon"
             >
               <PencilIcon className="h-4 w-4" />
             </Button>
@@ -104,13 +127,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           <Button
             onClick={handleDelete}
             className="bg-red-600 hover:bg-red-700"
+            size="icon"
             disabled={isDeleting}
           >
             {isDeleting ? (
-              <>
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
-              </>
+              <Loader2Icon className="h-4 w-4 animate-spin" />
             ) : (
               <TrashIcon className="h-4 w-4" />
             )}

@@ -9,7 +9,15 @@ export const getProjects = query({
         return await ctx.db.query("projects").collect();
     },
 });
-
+export const getByUserId = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("projects")
+            .filter((q) => q.eq(q.field("userId"), args.userId))
+            .collect();
+    },
+});
 export const createProject = mutation({
     args: {
         userId: v.id("users"),

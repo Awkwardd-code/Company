@@ -153,7 +153,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = 'default' }: SidebarHe
                         Messages
                       </span>
                     </div>
-                    
+
                   </div>
                 </Link>
               </li>
@@ -233,6 +233,32 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = 'default' }: SidebarHe
                   </div>
                 </Link>
               </li>
+              <li className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r ${pathname.includes('blogs') && 'from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]'}`}>
+                <Link
+                  href="/admin/blogs"
+                  className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${pathname.includes('blogs') ? '' : 'hover:text-gray-900 dark:hover:text-white'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="grow flex items-center">
+                      <svg
+                        className={`shrink-0 fill-current ${pathname.includes('blogs') ? 'text-violet-500' : 'text-gray-400 dark:text-gray-500'}`}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M4 4h16v2H4zm0 6h10v2H4zm0 6h16v2H4z" />
+                      </svg>
+                      <span
+                        className={`text-sm font-medium ml-4 duration-200 ${sidebarExpanded ? 'lg:opacity-100' : 'lg:opacity-0'} 2xl:opacity-100 sidebar-text`}
+                      >
+                        Blogs
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+
 
             </ul>
           </div>

@@ -1,115 +1,301 @@
-export default function TeamPage() {
-    const teamMembers = [
-        {
-            name: "Adrio Devid",
-            role: "Lead Developer",
-            description: "Adrio leads our development team with expertise in frontend technologies.",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            name: "Maria Smith",
-            role: "UI/UX Designer",
-            description: "Maria crafts intuitive and beautiful user experiences.",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            name: "James Carter",
-            role: "Backend Engineer",
-            description: "James ensures our systems are robust and scalable.",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            name: "Emily Brown",
-            role: "Product Manager",
-            description: "Emily drives our product vision and strategy.",
-            image: "https://via.placeholder.com/150",
-        },
-    ];
+"use client";
 
-    return (
-        <div className="min-h-screen bg-transparent px-4 py-12">
-            {/* New Hero Section */}
-            <div className="relative text-center mb-16 py-16">
-                {/* Frosted Glass Background for Hero */}
-                <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-md"></div>
+import { useMemo } from "react";
+import { useQuery } from "convex/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Id } from "../../../../../convex/_generated/dataModel";
+import { Loader2Icon, Users } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { api } from "../../../../../convex/_generated/api";
 
-                {/* Hero Content */}
-                <div className="relative z-10 max-w-4xl mx-auto">
-                    <h1 className="text-5xl md:text-6xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                        Welcome to Our Team
-                    </h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl mb-6">
-                        We are a group of passionate innovators working together to create
-                        cutting-edge solutions. Meet the brilliant minds behind our success!
-                    </p>
-                    <a
-                        href="#team"
-                        className="inline-block bg-blue-500 dark:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                    >
-                        Meet the Team
-                    </a>
-                </div>
-            </div>
-
-            {/* Existing Section Title */}
-            <div
-                className="relative mx-auto mb-12 max-w-[620px] pt-6 text-center md:mb-20 lg:pt-16"
-                data-wow-delay=".2s"
-            >
-                <span
-                    className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] font-extrabold leading-none opacity-20"
-                    style={{
-                        background: 'linear-gradient(180deg, rgba(74, 108, 247, 0.4) 0%, rgba(74, 108, 247, 0) 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        color: 'transparent',
-                    }}
-                >
-                    TEAM
-                </span>
-
-                <h2 className="font-heading text-dark mb-5 text-3xl font-semibold sm:text-4xl md:text-[50px] md:leading-[60px] dark:text-white">
-                    Our Unique & Awesome Core Features
-                </h2>
-                <p className="text-dark-text text-base dark:text-gray-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis
-                    tortor eros. Donec vitae tortor lacus. Phasellus aliquam ante in
-                    maximus.
-                </p>
-            </div>
-
-            {/* Team Members Grid */}
-            <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {teamMembers.map((member, index) => (
-                        <div
-                            key={index}
-                            className="bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-lg shadow-[0_6px_30px_rgba(150,150,150,0.4)] dark:shadow-[0_6px_30px_rgba(100,100,100,0.5)] overflow-hidden text-center"
-                        >
-                            {/* Member Image */}
-                            <img
-                                src={member.image}
-                                alt={member.name}
-                                className="w-32 h-32 mx-auto mt-6 rounded-full object-cover border-4 border-white dark:border-gray-800"
-                            />
-
-                            {/* Member Info */}
-                            <div className="p-6">
-                                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                    {member.name}
-                                </h2>
-                                <p className="text-blue-500 dark:text-blue-400 text-sm mb-3">
-                                    {member.role}
-                                </p>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                    {member.description}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
+interface TeamMember {
+  name: string;
+  role: string;
+  description: string;
+  image: string;
+  userId: Id<"users">;
 }
+
+// Animation variants
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.8 } },
+};
+
+export default function TeamPage() {
+  const professionals = useQuery(api.professionals.get);
+  const programmers = useQuery(api.users.getProgrammers);
+  const designations = useQuery(api.designations.getDesignations);
+
+  // Map professionals to teamMembers format with memoization
+  const teamMembers: TeamMember[] = useMemo(() => {
+    if (professionals === undefined || programmers === undefined || designations === undefined) {
+      return [];
+    }
+    return professionals.map((professional) => {
+      const programmer = programmers.find((u) => u._id === professional.userId);
+      const professionalDesignations =
+        designations
+          .filter((d) => professional.designations?.includes(d._id))
+          .map((d) => d.title)
+          .join(", ") || "Professional";
+
+      return {
+        name: programmer?.name || "Unknown Professional",
+        role: professionalDesignations,
+        description: professional.bio || "No bio available",
+        image: professional.image || "/default-avatar.png",
+        userId: professional.userId,
+      };
+    });
+  }, [professionals, programmers, designations]);
+
+  // Loading state
+  if (professionals === undefined || programmers === undefined || designations === undefined) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex justify-center items-center">
+        <motion.div
+          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Loader2Icon className="size-12 text-blue-600 dark:text-blue-400" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 py-12">
+      {/* Floating gradient blobs */}
+      <FloatingBlobs />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-100/40 to-transparent dark:from-blue-900/20 dark:to-transparent" />
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={container}
+          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center"
+        >
+          <motion.h1
+            variants={item}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
+          >
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+              Our Exceptional Team
+            </span>
+          </motion.h1>
+
+          <motion.p
+            variants={item}
+            className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10"
+          >
+            Meet the brilliant minds who combine innovation with expertise to deliver extraordinary results.
+          </motion.p>
+
+          <motion.div variants={item}>
+            <a
+              href="#team"
+              className="inline-flex items-center px-8 py-3.5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Scroll to team section"
+            >
+              Discover Our Team
+              <motion.svg
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                whileHover={{ y: 2 }}
+                transition={{ duration: 0.2 }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+              </motion.svg>
+            </a>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Team Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={container}
+          className="text-center mb-16"
+        >
+          <motion.h2
+            variants={item}
+            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 mb-4"
+          >
+            The Minds Behind Our Success
+          </motion.h2>
+          <motion.p
+            variants={item}
+            className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
+          >
+            Our diverse team combines creativity, technical expertise, and strategic vision to deliver outstanding results.
+          </motion.p>
+        </motion.div>
+
+        {/* Team Members Grid */}
+        <div id="team" className="mb-20">
+          <AnimatePresence>
+            {teamMembers.length > 0 ? (
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+              >
+                {teamMembers.map((member) => (
+                  <motion.div
+                    key={member.userId}
+                    variants={item}
+                    whileHover={{ y: -5 }}
+                    className="group"
+                  >
+                    <Link
+                      href={`/team/${member.userId}`}
+                      aria-label={`View profile of ${member.name}`}
+                    >
+                      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                        <div className="relative pt-8 px-8">
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/70 to-indigo-50/70 dark:from-blue-900/20 dark:to-indigo-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
+                          <div className="relative mx-auto h-40 w-40 rounded-full overflow-hidden border-4 border-white dark:border-gray-700 shadow-md group-hover:border-blue-400 transition-all duration-300">
+                            <Image
+                              src={member.image}
+                              alt={member.name}
+                              width={160}
+                              height={160}
+                              className="object-cover transition-transform duration-300 group-hover:scale-105"
+                              onError={(e) => {
+                                e.currentTarget.src = "/default-avatar.png";
+                              }}
+                              sizes="(max-width: 768px) 100vw, 160px"
+                            />
+                          </div>
+                        </div>
+                        <div className="p-6 pt-4 mt-2 flex-grow">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 mb-1">
+                            {member.name}
+                          </h3>
+                          <p className="text-blue-600 dark:text-blue-400 font-medium mb-4">
+                            {member.role}
+                          </p>
+                          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">
+                            {member.description}
+                          </p>
+                        </div>
+                        <div className="px-6 pb-6 flex justify-between items-center">
+                          <span className="inline-block text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline">
+                            View Profile →
+                          </span>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 bg-blue-500/10 dark:bg-blue-900/20 rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 dark:hover:bg-blue-900/30 transition-colors"
+                            aria-label={`Follow ${member.name}`}
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                              />
+                            </svg>
+                          </motion.button>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial="hidden"
+                animate="show"
+                variants={fadeIn}
+                className="text-center py-16"
+              >
+                <Users
+                  className="mx-auto text-5xl text-gray-400 mb-6"
+                  aria-label="Team placeholder icon"
+                />
+                <h3 className="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">
+                  Our Team is Growing
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Check back soon to meet our talented professionals!
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// Floating gradient blobs
+const FloatingBlobs = () => (
+  <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden -z-10">
+    <motion.div
+      animate={{
+        x: [0, 100, 0],
+        y: [0, -80, 0],
+        scale: [1, 1.1, 1],
+        transition: { duration: 25, repeat: Infinity, ease: "easeInOut" },
+      }}
+      className="absolute top-[15%] -left-1/3 w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/5 rounded-full blur-[80px]"
+    />
+    <motion.div
+      animate={{
+        x: [0, -100, 0],
+        y: [0, 80, 0],
+        scale: [1, 1.1, 1],
+        transition: { duration: 30, repeat: Infinity, ease: "easeInOut" },
+      }}
+      className="absolute top-[15%] -right-1/3 w-[500px] h-[500px] bg-purple-400/10 dark:bg-purple-600/5 rounded-full blur-[80px]"
+    />
+    <motion.div
+      animate={{
+        x: [0, 60, 0],
+        y: [0, 120, 0],
+        scale: [1, 1.2, 1],
+        transition: { duration: 35, repeat: Infinity, ease: "easeInOut" },
+      }}
+      className="absolute bottom-[10%] left-1/4 w-[400px] h-[400px] bg-pink-400/10 dark:bg-pink-600/5 rounded-full blur-[70px]"
+    />
+  </div>
+);
