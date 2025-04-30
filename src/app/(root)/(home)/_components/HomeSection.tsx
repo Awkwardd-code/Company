@@ -57,7 +57,7 @@ function HomeSection() {
                 data-aos-delay="200"
               >
                 <span className="bg-primary mr-2 inline-block h-2 w-2 rounded-full" />
-                Tailwind Template for Startups
+                Your Dream, Our Priority!!
               </span>
 
               <h1

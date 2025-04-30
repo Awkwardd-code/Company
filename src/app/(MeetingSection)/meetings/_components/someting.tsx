@@ -5,7 +5,7 @@ import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import {
     Dialog,
     DialogHeader,
@@ -24,23 +24,21 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import UserInfo from "@/components/UserInfo";
-import { Loader2Icon, XIcon, SearchIcon, LayoutGridIcon, LayoutListIcon } from "lucide-react";
+import {
+    Loader2Icon,
+    XIcon,
+    SearchIcon,
+    LayoutGridIcon,
+    LayoutListIcon,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { TIME_SLOTS } from "@/constants";
 import MeetingCard from "@/components/MeetingCard";
 import { api } from "../../../../../convex/_generated/api";
+import { Doc } from "../../../../../convex/_generated/dataModel"; // Import Doc
 
-// Define Interview type for TypeScript
-interface Interview {
-    _id: string;
-    title?: string;
-    description?: string;
-    startTime: number;
-    status: string;
-    streamCallId: string;
-    candidateId: string;
-    interviewerIds: string[];
-}
+// Use Doc<"interviews"> for type consistency
+type Interview = Doc<"interviews">;
 
 function InterviewScheduleUI() {
     const client = useStreamVideoClient();
@@ -149,9 +147,10 @@ function InterviewScheduleUI() {
     );
 
     // Filter interviews based on search query
-    const filteredInterviews = interviews.filter((interview) =>
-        (interview.title ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (interview.description ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredInterviews = interviews.filter(
+        (interview) =>
+            interview.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (interview.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
     );
 
     // Sort interviews: live meetings first, then by start time
@@ -159,45 +158,58 @@ function InterviewScheduleUI() {
         const now = Date.now();
         const DEFAULT_DURATION_MS = 60 * 60 * 1000; // 1 hour
         const aStart = a.startTime;
-        const aEnd = aStart + DEFAULT_DURATION_MS;
+        const aEnd = a.endTime ?? aStart + DEFAULT_DURATION_MS;
         const bStart = b.startTime;
-        const bEnd = bStart + DEFAULT_DURATION_MS;
+        const bEnd = b.endTime ?? bStart + DEFAULT_DURATION_MS;
 
         const aIsLive = now >= aStart && now <= aEnd;
         const bIsLive = now >= bStart && now <= bEnd;
 
         if (aIsLive && !bIsLive) return -1; // a is live, b is not
-        if (!aIsLive && bIsLive) return 1;  // b is live, a is not
+        if (!aIsLive && bIsLive) return 1; // b is live, a is not
         return aStart - bStart; // Sort by start time for non-live meetings
     });
 
     return (
-        <div className="container max-w-7xl mx-auto p-6 space-y-8">
+        <div className="container max-w-7xl mx-auto p-6 space-y-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
             <div className="flex items-center justify-between">
                 {/* HEADER INFO */}
-                <div>
-                    <h1 className="text-3xl font-bold">Meetings</h1>
-                    <p className="text-muted-foreground mt-1">Schedule and manage interviews</p>
+                <div className="space-y-2">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                        Meetings
+                    </h1>
+                    <p className="text-lg text-gray-500 dark:text-gray-400">
+                        Schedule and manage your interviews with ease
+                    </p>
                 </div>
 
                 {/* DIALOG */}
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <Button size="lg">Schedule Meeting</Button>
+                        <Button
+                            size="lg"
+                            className="bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-200"
+                        >
+                            Schedule Meeting
+                        </Button>
                     </DialogTrigger>
 
-                    <DialogContent className="sm:max-w-[500px] h-[calc(100vh-200px)] overflow-auto">
+                    <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-xl shadow-2xl">
                         <DialogHeader>
-                            <DialogTitle>Schedule Meeting</DialogTitle>
+                            <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                Schedule Meeting
+                            </DialogTitle>
                         </DialogHeader>
-                        <div className="space-y-4 py-4">
+                        <div className="space-y-6 py-6">
                             {/* INTERVIEW TITLE */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300">Title</label>
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Title
+                                </label>
                                 <Input
-                                    placeholder="Meeting title"
+                                    placeholder="Enter meeting title"
                                     name="title"
-                                    className="bg-[#2a2a3a] border-[#313244] text-white"
+                                    className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 />
@@ -205,35 +217,39 @@ function InterviewScheduleUI() {
 
                             {/* INTERVIEW DESC */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300">Description</label>
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Description
+                                </label>
                                 <Textarea
                                     name="description"
-                                    placeholder="Meeting description"
-                                    className="bg-[#2a2a3a] border-[#313244] text-white"
+                                    placeholder="Enter meeting description"
+                                    className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    rows={3}
+                                    rows={4}
                                 />
                             </div>
 
                             {/* CANDIDATE */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300">Attendees</label>
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Candidate
+                                </label>
                                 <Select
                                     value={formData.candidateId}
                                     onValueChange={(candidateId) =>
                                         setFormData({ ...formData, candidateId })
                                     }
                                 >
-                                    <SelectTrigger className="bg-[#2a2a3a] border-[#313244] text-white w-full">
+                                    <SelectTrigger className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200">
                                         <SelectValue placeholder="Select candidate" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#2a2a3a] border-[#313244] text-white max-h-60 overflow-y-auto">
+                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white max-h-60 overflow-y-auto">
                                         {candidates.map((candidate) => (
                                             <SelectItem
                                                 key={candidate.tokenIdentifier}
                                                 value={candidate.tokenIdentifier}
-                                                className="hover:bg-[#3a3a4a] text-white"
+                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-150"
                                             >
                                                 <UserInfo user={candidate} />
                                             </SelectItem>
@@ -244,19 +260,21 @@ function InterviewScheduleUI() {
 
                             {/* INTERVIEWERS */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Interviewers</label>
-                                <div className="flex flex-wrap gap-2 mb-2">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Interviewers
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-3">
                                     {selectedInterviewers.map((interviewer) => (
                                         <div
                                             key={interviewer.tokenIdentifier}
-                                            className="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm"
+                                            className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900 px-3 py-1.5 rounded-full text-sm text-blue-800 dark:text-blue-200"
                                         >
                                             <UserInfo user={interviewer} />
                                             {interviewer.tokenIdentifier !== user?.id && (
                                                 <button
                                                     onClick={() => removeInterviewer(interviewer.tokenIdentifier)}
-                                                    className="hover:text-destructive transition-colors"
-                                                    aria-label={`Remove ${interviewer.name || 'interviewer'}`}
+                                                    className="hover:text-red-500 dark:hover:text-red-400 transition-colors duration-150"
+                                                    aria-label={`Remove ${interviewer.name || "interviewer"}`}
                                                 >
                                                     <XIcon className="h-4 w-4" />
                                                 </button>
@@ -266,12 +284,16 @@ function InterviewScheduleUI() {
                                 </div>
                                 {availableInterviewers.length > 0 && (
                                     <Select onValueChange={addInterviewer}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200">
                                             <SelectValue placeholder="Add interviewer" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
                                             {availableInterviewers.map((interviewer) => (
-                                                <SelectItem key={interviewer.tokenIdentifier} value={interviewer.tokenIdentifier}>
+                                                <SelectItem
+                                                    key={interviewer.tokenIdentifier}
+                                                    value={interviewer.tokenIdentifier}
+                                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                                                >
                                                     <UserInfo user={interviewer} />
                                                 </SelectItem>
                                             ))}
@@ -290,26 +312,28 @@ function InterviewScheduleUI() {
                                     onSelect={(date) => date && setFormData({ ...formData, date })}
                                     disabled={(date) => date < new Date()}
                                     className={cn(
-                                        'w-full rounded-md border border-[#313244] bg-[#2a2a3a] text-gray-100 p-3',
+                                        "w-full rounded-md border border-[#313244] bg-[#2a2a3a] text-gray-100 p-3"
                                     )}
                                     classNames={{
-                                        months: 'w-full flex flex-col',
-                                        month: 'w-full space-y-4',
-                                        table: 'w-full border-collapse',
-                                        tbody: 'w-full',
-                                        row: 'w-full flex mt-2',
-                                        cell: cn('flex-1 text-center p-0 m-0.5', 'min-w-0'),
+                                        months: "w-full flex flex-col",
+                                        month: "w-full space-y-4",
+                                        table: "w-full border-collapse",
+                                        tbody: "w-full",
+                                        row: "w-full flex mt-2",
+                                        cell: cn("flex-1 text-center p-0 m-0.5", "min-w-0"),
                                         day: cn(
-                                            'w-full h-9 flex items-center justify-center text-sm p-1',
-                                            'text-gray-100 hover:bg-[#3a3a4a] rounded',
-                                            'aria-selected:bg-[#4a4a5a] aria-selected:text-white',
-                                            'disabled:text-gray-500 disabled:opacity-50',
+                                            "w-full h-9 flex items-center justify-center text-sm p-1",
+                                            "text-gray-100 hover:bg-[#3a3a4a] rounded",
+                                            "aria-selected:bg-[#4a4a5a] aria-selected:text-white",
+                                            "disabled:text-gray-500 disabled:opacity-50"
                                         ),
-                                        head_row: 'w-full flex',
-                                        head_cell: cn('flex-1 text-center text-muted-foreground text-[0.8rem] font-normal m-0.5'),
-                                        day_range_start: 'rounded-l bg-[#4a4a5a] text-white',
-                                        day_range_end: 'rounded-r bg-[#4a4a5a] text-white',
-                                        day_range_middle: 'bg-[#3a3a4a] text-gray-100',
+                                        head_row: "w-full flex",
+                                        head_cell: cn(
+                                            "flex-1 text-center text-muted-foreground text-[0.8rem] font-normal m-0.5"
+                                        ),
+                                        day_range_start: "rounded-l bg-[#4a4a5a] text-white",
+                                        day_range_end: "rounded-r bg-[#4a4a5a] text-white",
+                                        day_range_middle: "bg-[#3a3a4a] text-gray-100",
                                     }}
                                 />
                             </div>
@@ -338,11 +362,19 @@ function InterviewScheduleUI() {
                             </div>
 
                             {/* ACTION BUTTONS */}
-                            <div className="flex justify-end gap-3 pt-4">
-                                <Button variant="outline" onClick={() => setOpen(false)}>
+                            <div className="flex justify-end gap-4 pt-6">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setOpen(false)}
+                                    className="border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+                                >
                                     Cancel
                                 </Button>
-                                <Button onClick={scheduleMeeting} disabled={isCreating}>
+                                <Button
+                                    onClick={scheduleMeeting}
+                                    disabled={isCreating}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
+                                >
                                     {isCreating ? (
                                         <>
                                             <Loader2Icon className="mr-2 size-4 animate-spin" />
@@ -359,52 +391,65 @@ function InterviewScheduleUI() {
             </div>
 
             {/* SEARCH BAR AND TOGGLE BUTTON */}
-            <div className="flex items-center gap-4">
-                <div className="relative flex-1 max-w-md">
-                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                {/* Search Input */}
+                <div className="relative flex-1 max-w-md w-full">
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                     <Input
                         placeholder="Search by title or description"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-[#2a2a3a] border-[#313244] text-white"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-lg transition-all duration-200"
                     />
                 </div>
+
+                {/* Toggle Button */}
                 <Button
                     variant="outline"
                     size="icon"
                     onClick={() => setIsColumnLayout(!isColumnLayout)}
-                    aria-label={isColumnLayout ? "Switch to row layout" : "Switch to column layout"}
+                    aria-label={isColumnLayout ? "Switch to grid layout" : "Switch to list layout"}
+                    className="border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
                 >
                     {isColumnLayout ? (
-                        <LayoutGridIcon className="h-4 w-4" />
+                        <LayoutGridIcon className="h-5 w-5" />
                     ) : (
-                        <LayoutListIcon className="h-4 w-4" />
+                        <LayoutListIcon className="h-5 w-5" />
                     )}
                 </Button>
             </div>
 
+
             {/* LOADING STATE & MEETING CARDS */}
             {!interviews ? (
-                <div className="flex justify-center py-12">
-                    <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
+                <div className="flex justify-center py-16">
+                    <Loader2Icon className="size-10 animate-spin text-gray-400" />
                 </div>
             ) : sortedInterviews.length > 0 ? (
-                <div className="space-y-4">
-                    <div className={cn(
-                        "grid gap-6",
-                        isColumnLayout ? "grid-cols-1" : "md:grid-cols-2 lg:grid-cols-3"
-                    )}>
+                <div className="space-y-6">
+                    <div
+                        className={cn(
+                            "grid gap-6",
+                            isColumnLayout ? "grid-cols-1" : "md:grid-cols-2 lg:grid-cols-3"
+                        )}
+                    >
                         {sortedInterviews.map((interview) => (
-                            <MeetingCard key={interview._id} interview={interview} />
+                            <div
+                                key={interview._id}
+                                className="transform transition-all duration-300 hover:scale-105"
+                            >
+                                <MeetingCard interview={interview} />
+                            </div>
                         ))}
                     </div>
                 </div>
             ) : (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-16 text-gray-500 dark:text-gray-400 text-lg">
                     {searchQuery ? "No interviews match your search" : "No interviews scheduled"}
                 </div>
             )}
         </div>
     );
 }
+
 export default InterviewScheduleUI;

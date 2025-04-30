@@ -83,9 +83,6 @@ const config: Config = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    plugin(function ({ addVariant }) {
-      addVariant('sidebar-expanded', 'body.sidebar-expanded &');
-    }),
   ],
 };
 

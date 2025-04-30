@@ -15,16 +15,30 @@ import { Button } from "./ui/button";
 
 type Interview = Doc<"interviews">;
 
+const statusMap: Record<
+  "live" | "upcoming" | "completed",
+  {
+    label: string;
+    variant: "default" | "destructive" | "outline" | "secondary";
+    color: string;
+  }
+> = {
+  live: { label: "Live Now", variant: "default", color: "text-green-600" },
+  upcoming: { label: "Upcoming", variant: "secondary", color: "text-blue-600" },
+  completed: {
+    label: "Completed",
+    variant: "outline",
+    color: "text-muted-foreground",
+  },
+};
+
 function MeetingCard({ interview }: { interview: Interview }) {
   const { joinMeeting } = useMeetingActions();
   const status = getMeetingStatus(interview);
-  const formattedDate = format(new Date(interview.startTime), "EEEE, MMMM d · h:mm a");
-
-  const statusMap = {
-    live: { label: "Live Now", variant: "default", color: "text-green-600" },
-    upcoming: { label: "Upcoming", variant: "secondary", color: "text-blue-600" },
-    completed: { label: "Completed", variant: "outline", color: "text-muted-foreground" },
-  };
+  const formattedDate = format(
+    new Date(interview.startTime),
+    "EEEE, MMMM d · h:mm a"
+  );
 
   return (
     <Card className="shadow-md border border-muted p-4 hover:shadow-lg transition-all duration-300">
@@ -35,7 +49,10 @@ function MeetingCard({ interview }: { interview: Interview }) {
             <span>{formattedDate}</span>
           </div>
 
-          <Badge variant={statusMap[status].variant} className={statusMap[status].color}>
+          <Badge
+            variant={statusMap[status].variant}
+            className={statusMap[status].color}
+          >
             {statusMap[status].label}
           </Badge>
         </div>
@@ -68,7 +85,11 @@ function MeetingCard({ interview }: { interview: Interview }) {
         )}
 
         {status === "completed" && (
-          <Button variant="ghost" className="w-full text-muted-foreground cursor-default" disabled>
+          <Button
+            variant="ghost"
+            className="w-full text-muted-foreground cursor-default"
+            disabled
+          >
             Meeting Ended
           </Button>
         )}

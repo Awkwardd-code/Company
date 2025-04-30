@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Blocks } from 'lucide-react'
 import ModeToggle from '@/components/ModeToggle'
-import { SignIn, SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import TryUsOutButton from '@/app/(root)/(home)/_components/TryUsOutButton';
 import HeaderProfileBtn from '@/components/HeaderProfileBtn';
 

@@ -63,18 +63,7 @@ export const getMe = query({
         if (!identity) {
             throw new ConvexError("Unauthorized");
         }
-        // console.log(identity.tokenIdentifier);
-        //gentle-tarpon-23.clerk.accounts.dev|user_2vMLugBwx6JJF2E23CgI13e0dxO
-        //gentle-tarpon-23.clerk.accounts.dev|user_2vMXCos222aQDA6vwmFf9v1NFr9
 
-        /*  const user = await ctx.db
-             .query("users")
-             .withIndex("by_tokenIdentifier", (q) =>
-                 q.eq("tokenIdentifier", identity.tokenIdentifier)
-             )
-             .unique();
- 
-         // console.log(user) */
         const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
 
         const user = await ctx.db
@@ -265,14 +254,24 @@ export const getUserById = query({
 
 export const getUserByToken = query({
     args: { tokenIdentifier: v.string() },
+    handler: async (ctx, args) => {
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", args.tokenIdentifier))
+            .first();
+        return user;
+    },
+});
+
+
+export const getByToken = query({
+    args: { tokenIdentifier: v.string() },
     handler: async (ctx, { tokenIdentifier }) => {
         return await ctx.db
             .query("users")
-            .withIndex("by_tokenIdentifier", (q) =>
-                q.eq("tokenIdentifier", tokenIdentifier)
-            )
+            .withIndex("by_tokenIdentifier", q => q.eq("tokenIdentifier", tokenIdentifier))
             .unique();
-    },
+    }
 });
 
 

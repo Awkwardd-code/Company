@@ -8,12 +8,22 @@ import ModeToggle from "@/components/ModeToggle";
 import { useUser } from "@clerk/nextjs";
 import TryUsOutButton from "@/app/(root)/(home)/_components/TryUsOutButton";
 import HeaderProfileBtn from "./HeaderProfileBtn";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 
 function Header() {
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
   const headerRef = useRef(null);
+
+  const currentUser = useQuery(api.users.getUserByToken, {
+    tokenIdentifier: user?.id || "",
+  });
+
+  const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,14 +75,14 @@ function Header() {
 
         {/* Navigation Links and Controls */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-medium flex-wrap">
+          <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-medium flex-wrap md:flex-nowrap">
 
             {/* Home */}
             <Link
               href="/"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
+              ${pathname === "/" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Home
@@ -83,8 +93,8 @@ function Header() {
             <Link
               href="/team"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/team" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
+              ${pathname === "/team" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Team
@@ -95,8 +105,8 @@ function Header() {
             <Link
               href="/projects"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/projects" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
+              ${pathname === "/projects" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Projects
@@ -104,23 +114,25 @@ function Header() {
             </Link>
 
             {/* Meetings */}
-            <Link
-              href="/meetings"
-              className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/meetings" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
-            >
-              <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
-                Meetings
-              </span>
-            </Link>
+            {showMeeting && (
+              <Link
+                href="/meetings"
+                className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
+              ${pathname === "/meetings" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
+              >
+                <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
+                  Meetings
+                </span>
+              </Link>
+            )}
 
             {/* Blogs */}
             <Link
               href="/blogs"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/blogs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
+              ${pathname === "/blogs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Blogs
@@ -131,8 +143,8 @@ function Header() {
             <Link
               href="/faqs"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/faqs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""}
-              `}
+              ${pathname === "/faqs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+              md:block hidden`}  // Hide on mobile (smaller than md)
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 FAQs

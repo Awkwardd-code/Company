@@ -1,127 +1,185 @@
-"use client"
-// components/BlogSection.tsx
-import Image from 'next/image';
-import Link from 'next/link';
-import { FC } from 'react';
+"use client";
 
-// Define the interface for blog items
-interface BlogItem {
-  id: string;
-  imageSrc: string;
-  category: string;
-  author: string;
-  date: string;
-  title: string;
+import type { NextPage } from "next";
+import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
+import { format } from "date-fns";
+import { Loader2Icon } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+
+interface Blog {
+  _id: Id<"blogs">;
+  _creationTime: number;
   slug: string;
+  title: string;
+  content: string;
+  coverImage?: string;
+  authorId: Id<"users">;
+  createdAt: number;
+  tags?: string[];
+  updatedAt?: number;
+  published: boolean;
 }
 
-const BlogSection: FC = () => {
-  // Sample blog data (replace with dynamic data from an API or CMS)
-  const blogs: BlogItem[] = [
-    {
-      id: '1',
-      imageSrc: '/images/blog/image-1.jpg',
-      category: 'Online Business',
-      author: 'Musharof Chy',
-      date: '25 Dec, 2025',
-      title: 'Free advertising for your online business',
-      slug: 'free-advertising-online-business',
-    },
-    {
-      id: '2',
-      imageSrc: '/images/blog/image-2.jpg',
-      category: 'Ui/Ux Design',
-      author: 'Musharof Chy',
-      date: '19 Mar, 2025',
-      title: '9 simple ways to improve your design skills',
-      slug: 'improve-design-skills',
-    },
-    {
-      id: '3',
-      imageSrc: '/images/blog/image-3.jpg',
-      category: 'Web Development',
-      author: 'Musharof Chy',
-      date: '15 Feb, 2025',
-      title: 'Tips to quickly improve your coding speed',
-      slug: 'improve-coding-speed',
-    },
-  ];
+const CardSkeleton = () => (
+  <div className="bg-white dark:bg-gray-900/80 rounded-xl border border-gray-200 dark:border-gray-700/50 overflow-hidden h-[380px] animate-pulse">
+    <div className="p-6 space-y-4">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700" />
+          <div className="space-y-2">
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+        </div>
+        <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+      </div>
+      <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+      <div className="space-y-2">
+        <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded" />
+      </div>
+    </div>
+  </div>
+);
+
+const Card = ({ blog }: { blog: Blog }) => {
+  const author = useQuery(api.users.getAuthorDetails, { userId: blog.authorId });
+  const tag = blog.tags && blog.tags.length > 0 ? blog.tags[0] : "General";
+  const [imageError, setImageError] = useState(false);
 
   return (
-    <section id="blog" className="pt-14 sm:pt-20 lg:pt-[130px]">
-      <div className="px-4 xl:container mx-auto">
-        {/* Section Title */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Link href={`/blogs/${blog.slug}`} className="relative group block" aria-label={`Read ${blog.title}`}>
+        <div className="bg-white dark:bg-gray-900/80 rounded-xl border border-gray-200 dark:border-gray-700/50 overflow-hidden h-[400px] transition-all duration-300 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1">
+          <div className="p-6 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-500 transition-transform duration-300 group-hover:scale-105" />
+                <div className="space-y-1">
+                  <h3 className="text-gray-900 dark:text-white text-lg font-semibold">
+                    {author?.name || "Unknown Author"}
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    {format(new Date(blog.createdAt), "MMMM dd, yyyy")}
+                  </p>
+                </div>
+              </div>
+              <span className="bg-blue-600 text-white text-sm font-semibold px-3 py-1 rounded-lg transition-transform duration-300 group-hover:scale-105">
+                {tag}
+              </span>
+            </div>
+
+            {blog.coverImage && !imageError ? (
+              <div className="relative w-full h-32 rounded-lg overflow-hidden">
+                <Image
+                  src={blog.coverImage}
+                  alt={`${blog.title} cover`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  priority={false}
+                  onError={() => setImageError(true)}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-32 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-lg transition-colors duration-300" />
+            )}
+
+            <div className="space-y-1">
+              <h2 className="text-gray-900 dark:text-white text-xl font-bold line-clamp-1 transition-colors duration-300">
+                {blog.title}
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">
+                {blog.content}
+              </p>
+            </div>
+
+            <button className="mt-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+              Read More
+            </button>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
+
+const BlogSection: NextPage = () => {
+  const blogs = useQuery(api.blogs.get);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (blogs !== undefined) {
+      setIsLoading(false);
+    }
+  }, [blogs]);
+
+  // Filter published blogs client-side
+  const publishedBlogs = blogs?.filter((blog) => blog.published) || [];
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0f] transition-colors duration-300">
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden -z-10">
+        <div className="absolute top-[20%] -left-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-3xl transition-colors duration-300" />
+        <div className="absolute top-[20%] -right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-3xl transition-colors duration-300" />
+      </div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div
           className="relative mx-auto mb-12 max-w-[620px] pt-6 text-center md:mb-20 lg:pt-16"
           data-wow-delay=".2s"
         >
-          <span className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] leading-[1] font-extrabold opacity-20 bg-gradient-to-b from-[rgba(74,108,247,0.4)] to-[rgba(74,108,247,0)] bg-clip-text text-transparent">
+          <span
+            className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] font-extrabold leading-none opacity-20"
+            style={{
+              background: 'linear-gradient(180deg, rgba(74, 108, 247, 0.4) 0%, rgba(74, 108, 247, 0) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
             BLOGS
           </span>
+
           <h2 className="font-heading text-dark mb-5 text-3xl font-semibold sm:text-4xl md:text-[50px] md:leading-[60px] dark:text-white">
-            Latest News & Articles From Our Blog
+            Discover Expert Insights <br /> Start Your Journey Today!
           </h2>
           <p className="text-dark-text text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor eros. Donec vitae tortor
-            lacus. Phasellus aliquam ante in maximus.
+            Explore our collection of tutorials and insights from industry experts.
           </p>
         </div>
 
-        <div className="w-full border-b pb-20 dark:border-[#2E333D]">
-          <div className="-mx-4 flex flex-wrap">
-            {blogs.map((blog, index) => (
-              <div key={blog.id} className="w-full px-4 md:w-1/2 lg:w-1/3">
-                <div className="mb-10" data-wow-delay={`.${2 + index}s`}>
-                  <div className="relative mb-8 overflow-hidden rounded-sm">
-                    <Link href={`/blog/${blog.slug}`} className="block">
-                      <Image
-                        src={blog.imageSrc}
-                        alt={blog.title}
-                        width={400} // Adjust based on your image dimensions
-                        height={250} // Adjust based on your image dimensions
-                        className="w-full h-auto object-cover"
-                        onError={() => console.error(`Failed to load image: ${blog.imageSrc}`)}
-                      />
-                    </Link>
-                    <span className="bg-primary font-heading absolute top-5 left-5 rounded-sm px-4 py-[6px] text-sm font-medium text-white">
-                      {blog.category}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="mb-4 flex items-center">
-                      <p className="font-heading text-dark-text flex items-center pr-5 text-base">
-                        <span className="pr-2">
-                          <svg width="18" height="18" viewBox="0 0 18 18" className="fill-current">
-                            <path d="M15 16.5H13.5V15C13.5 14.4033 13.2629 13.831 12.841 13.409C12.419 12.9871 11.8467 12.75 11.25 12.75H6.75C6.15326 12.75 5.58097 12.9871 5.15901 13.409C4.73705 13.831 4.5 14.4033 4.5 15V16.5H3V15C3 14.0054 3.39509 13.0516 4.09835 12.3484C4.80161 11.6451 5.75544 11.25 6.75 11.25H11.25C12.2446 11.25 13.1984 11.6451 13.9016 12.3484C14.6049 13.0516 15 14.0054 15 15V16.5ZM9 9.75C8.40905 9.75 7.82389 9.63361 7.27792 9.40746C6.73196 9.18131 6.23588 8.84984 5.81802 8.43198C5.40015 8.01412 5.06869 7.51804 4.84254 6.97208C4.6164 6.42611 4.5 5.84095 4.5 5.25C4.5 4.65905 4.6164 4.07389 4.84254 3.52793C5.06869 2.98196 5.40015 2.48588 5.81802 2.06802C6.23588 1.65016 6.73196 1.31869 7.27792 1.09254C7.82389 0.866396 8.40905 0.75 9 0.75C10.1935 0.75 11.3381 1.22411 12.182 2.06802C13.0259 2.91193 13.5 4.05653 13.5 5.25C13.5 6.44348 13.0259 7.58807 12.182 8.43198C11.3381 9.2759 10.1935 9.75 9 9.75ZM9 8.25C9.79565 8.25 10.5587 7.93393 11.1213 7.37132C11.6839 6.80871 12 6.04565 12 5.25C12 4.45435 11.6839 3.69129 11.1213 3.12868C10.5587 2.56607 9.79565 2.25 9 2.25C8.20435 2.25 7.44129 2.56607 6.87868 3.12868C6.31607 3.69129 6 4.45435 6 5.25C6 6.04565 6.31607 6.80871 6.87868 7.37132C7.44129 7.93393 8.20435 8.25 9 8.25Z" />
-                          </svg>
-                        </span>
-                        {blog.author}
-                      </p>
-                      <p className="font-heading text-dark-text flex items-center text-base">
-                        <span className="pr-2">
-                          <svg width="18" height="18" viewBox="0 0 18 18" className="fill-current">
-                            <path d="M12.75 2.25H15.75C15.9489 2.25 16.1397 2.32902 16.2803 2.46967C16.421 2.61032 16.5 2.80109 16.5 3V15C16.5 15.1989 16.421 15.3897 16.2803 15.5303C16.1397 15.671 15.9489 15.75 15.75 15.75H2.25C2.05109 15.75 1.86032 15.671 1.71967 15.5303C1.57902 15.3897 1.5 15.1989 1.5 15V3C1.5 2.80109 1.57902 2.61032 1.71967 2.46967C1.86032 2.32902 2.05109 2.25 2.25 2.25H5.25V0.75H6.75V2.25H11.25V0.75H12.75V2.25ZM11.25 3.75H6.75V5.25H5.25V3.75H3V6.75H15V3.75H12.75V5.25H11.25V3.75ZM15 8.25H3V14.25H15V8.25Z" />
-                          </svg>
-                        </span>
-                        {blog.date}
-                      </p>
-                    </div>
-                    <h3>
-                      <Link
-                        href={`/blog/${blog.slug}`}
-                        className="font-heading text-dark hover:text-primary dark:hover:text-primary text-xl font-medium md:text-2xl lg:text-xl xl:text-2xl dark:text-white"
-                      >
-                        {blog.title}
-                      </Link>
-                    </h3>
-                  </div>
-                </div>
-              </div>
+
+        {isLoading || blogs === undefined ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <CardSkeleton key={i} />
             ))}
           </div>
-        </div>
+        ) : publishedBlogs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-gray-600 dark:text-gray-400">
+            <p className="text-lg font-medium">No blogs found</p>
+            <p className="text-sm">Check back later for new content!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publishedBlogs.map((blog: Blog) => (
+              <Card key={blog._id} blog={blog} />
+            ))}
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 };
 

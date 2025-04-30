@@ -100,6 +100,7 @@ const MediaDropdown = () => {
 
 			<input
 				type='file'
+				className="z-[99999]"
 				ref={videoInput}
 				accept='video/mp4'
 				onChange={(e) => setSelectedVideo(e.target?.files![0])}
@@ -119,6 +120,7 @@ const MediaDropdown = () => {
 			{selectedVideo && (
 				<MediaVideoDialog
 					isOpen={selectedVideo !== null}
+					
 					onClose={() => setSelectedVideo(null)}
 					selectedVideo={selectedVideo}
 					isLoading={isLoading}
@@ -131,7 +133,7 @@ const MediaDropdown = () => {
 					<Plus className='text-gray-600 dark:text-gray-400 z-[9999]' />
 				</DropdownMenuTrigger>
 
-				<DropdownMenuContent className="z-[10000]">
+				<DropdownMenuContent className="z-[99]">
 					<DropdownMenuItem onClick={() => imageInput.current!.click()}>
 						<ImageIcon size={18} className='mr-1' /> Photo
 					</DropdownMenuItem>
@@ -201,7 +203,7 @@ const MediaVideoDialog = ({ isOpen, onClose, selectedVideo, isLoading, handleSen
 				if (!isOpen) onClose();
 			}}
 		>
-			<DialogContent>
+			<DialogContent className="z-[10000]">
 				<DialogDescription>Video</DialogDescription>
 				<div className='w-full'>
 					{renderedVideo && <ReactPlayer url={renderedVideo} controls width='100%' />}

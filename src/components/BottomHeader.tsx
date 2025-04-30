@@ -1,52 +1,45 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Home, Users, FileText, MessageSquare, Archive } from "lucide-react";
+import { Home, Users, FileText, MessageSquare, Archive, CalendarClock } from "lucide-react";
 import Link from "next/link";
+import { FiInbox } from "react-icons/fi";
+import { useUser } from "@clerk/nextjs"; // Adjust this to your auth system
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 const BottomHeader = () => {
-  const [isProjectAvailable, setIsProjectAvailable] = useState(false);
   const [isAtFooter, setIsAtFooter] = useState(false);
-  const [isMobile, setIsMobile] = useState(false); // Fixed typo: useState0 → useState
+  const [isMobile, setIsMobile] = useState(false);
+
+  const { user } = useUser();
+  const currentUser = useQuery(api.users.getUserByToken, {
+    tokenIdentifier: user?.id || "",
+  });
+
+  const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
 
   useEffect(() => {
-    // Check mobile screen size
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768); // Tailwind 'md' breakpoint
+      setIsMobile(window.innerWidth <= 768);
     };
 
-    // Run on mount
     checkMobile();
-
-    // Listen for resize events
     window.addEventListener("resize", checkMobile);
 
-    // Simulate project availability
-    setIsProjectAvailable(true);
-
-    // Scroll detection for footer
     const handleScroll = () => {
       const footer = document.querySelector("footer");
-      if (!footer) {
-        console.warn("Footer not found in DOM");
-        setIsAtFooter(false);
-        return;
-      }
+      if (!footer) return setIsAtFooter(false);
 
       const footerRect = footer.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      if (footerRect.top <= windowHeight && footerRect.bottom >= 0) {
-        setIsAtFooter(true);
-      } else {
-        setIsAtFooter(false);
-      }
+      setIsAtFooter(footerRect.top <= windowHeight && footerRect.bottom >= 0);
     };
 
     window.addEventListener("scroll", handleScroll);
     handleScroll();
 
-    // Cleanup
     return () => {
       window.removeEventListener("resize", checkMobile);
       window.removeEventListener("scroll", handleScroll);
@@ -63,63 +56,43 @@ const BottomHeader = () => {
 
   return (
     <div
-      className={`w-full bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] p-4 backdrop-blur-lg border-t border-white/10 z-50 transition-all duration-500 ease-in-out ${
+      className={`w-full bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] p-6 pb-8 backdrop-blur-lg border-t border-white/10 z-50 transition-all duration-500 ease-in-out ${
         isAtFooter
-          ? "absolute translate-y-0 opacity-100"
-          : "fixed bottom-0 left-0 translate-y-4 opacity-95"
+          ? "absolute translate-y-0 opacity-100 mb-0"
+          : "fixed bottom-0 left-0 translate-y-4 opacity-95 mb-4"
       }`}
       style={isAtFooter ? { top: getFooterBottom() } : {}}
     >
       <nav className="flex justify-between items-center text-white text-lg font-medium" role="navigation" aria-label="Bottom navigation">
-        <Link
-          href="/"
-          className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-          aria-label="Home page"
-        >
-          <Home size={24} className="transform transition-transform duration-300 hover:scale-110" />
+        <Link href="/" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <Home size={24} />
         </Link>
 
-        <Link
-          href="/team"
-          className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-          aria-label="Team page"
-        >
-          <Users size={24} className="transform transition-transform duration-300 hover:scale-110" />
+        <Link href="/team" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <Users size={24} />
         </Link>
 
-        <Link
-          href="/blogs"
-          className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-          aria-label="Blogs page"
-        >
-          <FileText size={24} className="transform transition-transform duration-300 hover:scale-110" />
+        <Link href="/blogs" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <FileText size={24} />
         </Link>
 
-        <Link
-          href="/faqs"
-          className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-          aria-label="FAQs page"
-        >
-          <MessageSquare size={24} className="transform transition-transform duration-300 hover:scale-110" />
-        </Link>
-
-        <Link
-          href="/chat"
-          className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-          aria-label="Chat page"
-        >
-          <MessageSquare size={24} className="transform transition-transform duration-300 hover:scale-110" />
-        </Link>
-
-        {isProjectAvailable && (
-          <Link
-            href="/projects"
-            className="flex-1 flex justify-center items-center text-white hover:text-blue-400 transition-colors duration-300 ease-in-out"
-            aria-label="Projects page"
-          >
-            <Archive size={24} className="transform transition-transform duration-300 hover:scale-110" />
+        {showMeeting && (
+          <Link href="/meetings" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+            <CalendarClock size={24} />
           </Link>
         )}
+
+        <Link href="/projects" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <Archive size={24} />
+        </Link>
+
+        <Link href="/faqs" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <MessageSquare size={24} />
+        </Link>
+
+        <Link href="/chat" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <FiInbox size={24} />
+        </Link>
       </nav>
     </div>
   );
