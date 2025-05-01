@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import ConvexClerkProvider from "@/components/providers/ConvexClerkProvider";
 import { Toaster } from "react-hot-toast";
+import ChatWidget from "@/components/ChatWidget";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,6 +40,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <ChatWidget/>
           </ThemeProvider>
           <Toaster/>
         </body>

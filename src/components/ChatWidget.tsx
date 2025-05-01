@@ -183,6 +183,8 @@ const ChatToggleButton: React.FC<ChatToggleButtonProps> = ({
   );
 };
 
+
+
 const ChatPanel: React.FC<ChatPanelProps> = ({
   isOpen,
   setIsOpen,

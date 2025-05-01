@@ -17,18 +17,25 @@ function Header() {
   const [isSticky, setIsSticky] = useState(false);
   const headerRef = useRef(null);
 
-  console.log(user)
+  const isLoggedIn = !!user?.id;
 
-  const currentUser = useQuery(api.users.getUserByToken, {
-    tokenIdentifier: user?.id || "",
-  });
+  const currentUser = useQuery(
+    api.users.getUserByToken,
+    isLoggedIn
+      ? {
+          tokenIdentifier: user.id,
+        }
+      : "skip"
+  );
+  // const showMeeting = true;
 
   const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
   
   // Check if the user is an admin
   const isAdmin = currentUser?.isAdmin;
+  // const isAdmin = true;
 
-  console.log(currentUser?.role)
+  
  
 
   useEffect(() => {
