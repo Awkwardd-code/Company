@@ -11,19 +11,25 @@ import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
-
 function Header() {
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
   const headerRef = useRef(null);
 
+  console.log(user)
+
   const currentUser = useQuery(api.users.getUserByToken, {
     tokenIdentifier: user?.id || "",
   });
 
   const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
+  
+  // Check if the user is an admin
+  const isAdmin = currentUser?.isAdmin;
 
+  console.log(currentUser?.role)
+ 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,7 +82,6 @@ function Header() {
         {/* Navigation Links and Controls */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-medium flex-wrap md:flex-nowrap">
-
             {/* Home */}
             <Link
               href="/"
@@ -101,17 +106,30 @@ function Header() {
               </span>
             </Link>
 
-            {/* Projects */}
-            <Link
-              href="/projects"
-              className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
-              ${pathname === "/projects" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
-            >
-              <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
-                Projects
-              </span>
-            </Link>
+            {/* Conditional Link for Projects or Dashboard */}
+            {isAdmin ? (
+              <Link
+                href="/admin"
+                className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
+                ${pathname === "/admin" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+                md:block hidden`}
+              >
+                <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
+                  Dashboard
+                </span>
+              </Link>
+            ) : (
+              <Link
+                href="/projects"
+                className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
+                ${pathname === "/projects" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
+                md:block hidden`}
+              >
+                <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
+                  Projects
+                </span>
+              </Link>
+            )}
 
             {/* Meetings */}
             {showMeeting && (

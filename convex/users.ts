@@ -1,5 +1,8 @@
 import { ConvexError, v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+
+
 
 export const createUser = internalMutation({
     args: {
@@ -9,6 +12,14 @@ export const createUser = internalMutation({
         image: v.string(),
     },
     handler: async (ctx, args) => {
+        // Check if the email already exists in the database
+        const existingUser = await ctx.db.query("users").filter(q => q.eq("email", args.email)).first();
+
+        if (existingUser) {
+            throw new Error("Email is already registered.");
+        }
+
+        // If email doesn't exist, insert the new user
         await ctx.db.insert("users", {
             tokenIdentifier: args.tokenIdentifier,
             email: args.email,
@@ -20,6 +31,8 @@ export const createUser = internalMutation({
         });
     },
 });
+
+
 export const updateUser = internalMutation({
     args: { tokenIdentifier: v.string(), image: v.string() },
     async handler(ctx, args) {
@@ -133,12 +146,16 @@ export const editUser = mutation({
 export const setUserOnline = internalMutation({
     args: { tokenIdentifier: v.string() },
     handler: async (ctx, args) => {
+        const cleanToken = args.tokenIdentifier.replace(/^https?:\/\//, "");
+
         const user = await ctx.db
             .query("users")
-            .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", args.tokenIdentifier))
+            .withIndex("by_tokenIdentifier", (q) =>
+                q.eq("tokenIdentifier", cleanToken)
+            )
             .unique();
 
-        console.log(user)
+
 
         if (!user) {
             throw new ConvexError("User not found");
@@ -151,11 +168,15 @@ export const setUserOnline = internalMutation({
 export const setUserOffline = internalMutation({
     args: { tokenIdentifier: v.string() },
     handler: async (ctx, args) => {
+        const cleanToken = args.tokenIdentifier.replace(/^https?:\/\//, "");
+
         const user = await ctx.db
             .query("users")
-            .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", args.tokenIdentifier))
+            .withIndex("by_tokenIdentifier", (q) =>
+                q.eq("tokenIdentifier", cleanToken)
+            )
             .unique();
-        console.log(user);
+            
         if (!user) {
             throw new ConvexError("User not found");
         }
@@ -255,10 +276,19 @@ export const getUserById = query({
 export const getUserByToken = query({
     args: { tokenIdentifier: v.string() },
     handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new ConvexError("Unauthorized");
+        }
+
+        const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
+
         const user = await ctx.db
             .query("users")
-            .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", args.tokenIdentifier))
-            .first();
+            .withIndex("by_tokenIdentifier", (q) =>
+                q.eq("tokenIdentifier", cleanToken)
+            )
+            .unique();
         return user;
     },
 });
@@ -283,5 +313,104 @@ export const getProgrammers = query({
             .query("users")
             .filter((q) => q.eq(q.field("role"), "programmer"))
             .collect();
+    },
+});
+
+
+export const deleteUserWithRelations = mutation({
+    args: { userId: v.id("users") },
+    handler: async (ctx, { userId }) => {
+        try {
+            // 1. Delete related projects
+            const projects = await ctx.db
+                .query("projects")
+                .filter((q) => q.eq(q.field("userId"), userId))
+                .collect();
+            for (const project of projects) {
+                await ctx.db.delete(project._id);
+            }
+
+            // 2. Delete professional profile
+            const professional = await ctx.db
+                .query("professionals")
+                .filter((q) => q.eq(q.field("userId"), userId))
+                .unique();
+            if (professional) {
+                await ctx.db.delete(professional._id);
+            }
+
+            // 3. Delete authored blogs
+            const blogs = await ctx.db
+                .query("blogs")
+                .filter((q) => q.eq(q.field("authorId"), userId))
+                .collect();
+            for (const blog of blogs) {
+                await ctx.db.delete(blog._id);
+            }
+
+            // 4. Remove user from conversations (and handle admin)
+            const conversations = await ctx.db.query("conversations").collect();
+            const userConversations = conversations.filter((convo) =>
+                convo.participants.includes(userId)
+            );
+
+            for (const convo of userConversations) {
+                const updatedParticipants = convo.participants.filter((pid) => pid !== userId);
+
+                // Initialize updates with just participants
+                const updates: Partial<{
+                    participants: Id<"users">[];
+                    admin?: Id<"users">;
+                }> = {
+                    participants: updatedParticipants,
+                };
+
+                // Only reassign admin if there's at least one other participant
+                if (convo.admin === userId && updatedParticipants.length > 0) {
+                    updates.admin = updatedParticipants[0];
+                }
+
+                if (updatedParticipants.length === 0) {
+                    await ctx.db.delete(convo._id);
+                } else {
+                    await ctx.db.patch(convo._id, updates);
+                }
+            }
+
+
+            // 5. Delete interviews where user is a candidate
+            const candidateInterviews = await ctx.db
+                .query("interviews")
+                .filter((q) => q.eq(q.field("candidateId"), userId))
+                .collect();
+            for (const interview of candidateInterviews) {
+                await ctx.db.delete(interview._id);
+            }
+
+            // 6. Remove user from interviewer lists
+            const interviews = await ctx.db.query("interviews").collect();
+            const userInterviews = interviews.filter((interview) =>
+                interview.interviewerIds.includes(userId)
+            );
+            for (const interview of userInterviews) {
+                const updatedIds = interview.interviewerIds.filter((id) => id !== userId);
+                await ctx.db.patch(interview._id, { interviewerIds: updatedIds });
+            }
+
+            // 7. Delete messages sent by this user
+            const messages = await ctx.db
+                .query("messages")
+                .filter((q) => q.eq(q.field("sender"), userId))
+                .collect();
+            for (const message of messages) {
+                await ctx.db.delete(message._id);
+            }
+
+            // 8. Delete the user record
+            await ctx.db.delete(userId);
+        } catch (error) {
+            console.error(`Failed to delete user ${userId}:`, error);
+            // throw new Error(`User deletion failed: ${error.message}`);
+        }
     },
 });

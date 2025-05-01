@@ -21,6 +21,7 @@ export default defineSchema({
     groupImage: v.optional(v.string()),
     admin: v.optional(v.id("users")),
   }),
+  
   designations: defineTable({
     title: v.string(),
   }),
@@ -42,12 +43,12 @@ export default defineSchema({
     title: v.string(),            
     slug: v.string(),             
     content: v.string(),          
-    coverImage: v.string(),       // Optional: Cover image URL
-    published: v.boolean(),       // Published or draft
-    authorId: v.id("users"),      // Link to the author's user id (assuming you have a 'users' table)
-    tags: v.optional(v.array(v.string())), // Optional: Tags like ["javascript", "webdev"]
-    createdAt: v.number(),        // Timestamp (Date.now())
-    updatedAt: v.optional(v.number()), // Optional: last update timestamp
+    coverImage: v.string(),    
+    published: v.boolean(),     
+    authorId: v.id("users"),     
+    tags: v.optional(v.array(v.string())), 
+    createdAt: v.number(),       
+    updatedAt: v.optional(v.number()),
   }),
 
   messages: defineTable({

@@ -68,3 +68,44 @@ export const updateInterviewStatus = mutation({
         });
     },
 });
+
+
+// Mock function: Replace with your actual external API call
+async function deleteStreamRoom(streamCallId: string) {
+    console.log(`Deleting external stream room with ID: ${streamCallId}`);
+    // Example: await fetch(`https://api.stream.com/rooms/${streamCallId}`, { method: 'DELETE' });
+}
+
+export const deleteInterview = mutation({
+    args: { interviewId: v.id("interviews") },
+    handler: async (ctx, { interviewId }) => {
+        // 1. Get the interview
+        const interview = await ctx.db.get(interviewId);
+        if (!interview) {
+            throw new Error("Interview not found");
+        }
+
+        // 2. Clean up external stream call (if used)
+        if (interview.streamCallId) {
+            await deleteStreamRoom(interview.streamCallId);
+        }
+
+        // 3. Clean up related conversations/messages if applicable (optional)
+        // Example: If each interview has a conversation, you could store the conversation ID in the interview
+        // const conversationId = interview.conversationId;
+        // if (conversationId) {
+        //   await ctx.runMutation(api.conversations.deleteConversation, { conversationId });
+        // }
+
+        // 4. Remove interview from candidate and interviewer records if needed (optional)
+        // For example, update "status" or remove interview references in user metadata (not shown in schema)
+
+        // 5. Cancel notifications or scheduled jobs (mocked)
+        console.log(`Cancel any scheduled notifications or jobs for interview ${interviewId}`);
+
+        // 6. Delete the interview
+        await ctx.db.delete(interviewId);
+
+        console.log(`Interview ${interviewId} and related resources have been cleaned up.`);
+    },
+});

@@ -1,7 +1,5 @@
-
 import { DeviceSettings, useCall, VideoPreview } from "@stream-io/video-react-sdk";
 import { useEffect, useState } from "react";
-// import { Card } from "./ui/card";
 import { CameraIcon, MicIcon, SettingsIcon } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
@@ -32,45 +30,44 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-background/95">
+        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-background/95">
             <div className="w-full max-w-[1200px] mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     {/* VIDEO PREVIEW CONTAINER */}
-                    <Card className="md:col-span-1 p-6 flex flex-col">
+                    <Card className="md:col-span-1 p-3 sm:p-4  lg:p-6 flex flex-col">
                         <div>
-                            <h1 className="text-xl font-semibold mb-1">Camera Preview</h1>
-                            <p className="text-sm text-muted-foreground">Make sure you look good!</p>
+                            <h1 className="text-base sm:text-lg lg:text-xl font-semibold mb-0.5 sm:mb-1">Camera Preview</h1>
+                            <p className="text-[0.65rem] sm:text-xs lg:text-sm text-muted-foreground">Make sure you look good!</p>
                         </div>
 
                         {/* VIDEO PREVIEW */}
-                        <div className="mt-4 flex-1 min-h-[400px] rounded-xl overflow-hidden bg-muted/50 border relative">
+                        <div className="mt-2 sm:mt-4 flex-1 max-h-[60vh] rounded-lg sm:rounded-xl overflow-hidden bg-muted/50 border relative aspect-video">
                             <div className="absolute inset-0">
-                                <VideoPreview className="h-full w-full" />
+                                <VideoPreview className="h-full w-full max-w-full max-h-full" />
                             </div>
                         </div>
                     </Card>
 
                     {/* CARD CONTROLS */}
-
-                    <Card className="md:col-span-1 p-6">
+                    <Card className="md:col-span-1 p-4 sm:p-6">
                         <div className="h-full flex flex-col">
-                            {/* MEETING DETAILS  */}
+                            {/* MEETING DETAILS */}
                             <div>
-                                <h2 className="text-xl font-semibold mb-1">Meeting Details</h2>
-                                <p className="text-sm text-muted-foreground break-all">{call.id}</p>
+                                <h2 className="text-lg sm:text-xl font-semibold mb-1">Meeting Details</h2>
+                                <p className="text-xs sm:text-sm text-muted-foreground break-all">{call.id}</p>
                             </div>
 
                             <div className="flex-1 flex flex-col justify-between">
-                                <div className="spacey-6 mt-8">
+                                <div className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
                                     {/* CAM CONTROL */}
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                <CameraIcon className="h-5 w-5 text-primary" />
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <CameraIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="font-medium">Camera</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="font-medium text-sm sm:text-base">Camera</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground">
                                                     {isCameraDisabled ? "Off" : "On"}
                                                 </p>
                                             </div>
@@ -83,13 +80,13 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
 
                                     {/* MIC CONTROL */}
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                <MicIcon className="h-5 w-5 text-primary" />
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <MicIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="font-medium">Microphone</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="font-medium text-sm sm:text-base">Microphone</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground">
                                                     {isMicDisabled ? "Off" : "On"}
                                                 </p>
                                             </div>
@@ -102,21 +99,21 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
 
                                     {/* DEVICE SETTINGS */}
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                <SettingsIcon className="h-5 w-5 text-primary" />
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <SettingsIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="font-medium">Settings</p>
-                                                <p className="text-sm text-muted-foreground">Configure devices</p>
+                                                <p className="font-medium text-sm sm:text-base">Settings</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground">Configure devices</p>
                                             </div>
                                         </div>
                                         <DeviceSettings />
                                     </div>
                                 </div>
 
-                                {/* JOIN BTN */}
-                                <div className="space-y-3 mt-8">
+                                {/* JOIN BUTTON */}
+                                <div className="space-y-3 mt-6 sm:mt-8">
                                     <Button className="w-full" size="lg" onClick={handleJoin}>
                                         Join Meeting
                                     </Button>
@@ -132,4 +129,5 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
         </div>
     );
 }
+
 export default MeetingSetup;

@@ -19,6 +19,9 @@ const BottomHeader = () => {
 
   const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
 
+  // Check if the user is an admin
+  const isAdmin = currentUser?.isAdmin;
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -82,9 +85,22 @@ const BottomHeader = () => {
           </Link>
         )}
 
-        <Link href="/projects" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
-          <Archive size={24} />
-        </Link>
+        {/* Conditional Link for Projects or Dashboard */}
+        {isAdmin ? (
+          <Link
+            href="/admin"
+            className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110"
+          >
+            <Archive size={24} />
+          </Link>
+        ) : (
+          <Link
+            href="/projects"
+            className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110"
+          >
+            <Archive size={24} />
+          </Link>
+        )}
 
         <Link href="/faqs" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
           <MessageSquare size={24} />

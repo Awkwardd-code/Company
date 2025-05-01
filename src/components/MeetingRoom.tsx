@@ -18,12 +18,16 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import CodeEditor from "./CodeEditor";
-// import EndCallButton from "./EndCallButton";
+import EndCallButton from "./EndCallButton";
 
 const MeetingRoom = () => {
     const router = useRouter();
     const [layoutMode, setLayoutMode] = useState<"grid" | "speaker">("speaker");
     const [showParticipants, setShowParticipants] = useState(false);
+
+    // ✅ Assume this comes from auth/user data
+    const [isClient, setIsClient] = useState(true); // set to `true` for client, `false` for others
+
     const { useCallCallingState } = useCallStateHooks();
     const callingState = useCallCallingState();
 
@@ -39,8 +43,14 @@ const MeetingRoom = () => {
         <div className="h-[calc(100vh-1px)]">
             <ResizablePanelGroup direction="horizontal">
                 {/* LEFT PANEL: VIDEO SECTION */}
-                <ResizablePanel defaultSize={35} minSize={25} maxSize={100} className="relative">
-                    <div className="absolute inset-0">
+                <ResizablePanel
+                    defaultSize={100}
+                    minSize={100}
+                    maxSize={100}
+                    className={`relative transition-all duration-300 ease-in-out ${!isClient ? "md:default-size-[35] md:min-size-[25] md:max-size-[100]" : ""
+                        }`}
+                >
+                    <div className="absolute inset-0 transition-all duration-300 ease-in-out">
                         {layoutMode === "grid" ? <PaginatedGridLayout /> : <SpeakerLayout />}
 
                         {showParticipants && (
@@ -80,17 +90,24 @@ const MeetingRoom = () => {
                                 <UsersIcon className="w-4 h-4" />
                             </Button>
 
-                            {/* <EndCallButton /> */}
+                            <EndCallButton />
                         </div>
                     </div>
                 </ResizablePanel>
 
-                <ResizableHandle withHandle />
-
-                {/* RIGHT PANEL: CODE EDITOR */}
-                <ResizablePanel defaultSize={65} minSize={30}>
-                    <CodeEditor />
-                </ResizablePanel>
+                {/* Handle and Right Panel only for non-client users */}
+                {!isClient && (
+                    <>
+                        <ResizableHandle withHandle className="transition-all duration-300 ease-in-out" />
+                        <ResizablePanel
+                            defaultSize={65}
+                            minSize={30}
+                            className="transition-all duration-300 ease-in-out"
+                        >
+                            <CodeEditor />
+                        </ResizablePanel>
+                    </>
+                )}
             </ResizablePanelGroup>
         </div>
     );

@@ -185,13 +185,13 @@ export const getUserConversation = query({
 export const createUserConversation = mutation({
 	args: {},
 	handler: async (ctx, args) => {
-		
+
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
 			throw new Error("User not authenticated");
 		}
 		const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
-		
+
 		const currentUser = await ctx.db
 			.query("users")
 			.withIndex("by_tokenIdentifier", (q) =>
@@ -203,7 +203,7 @@ export const createUserConversation = mutation({
 			throw new Error("Current user not found");
 		}
 
-		
+
 		const admin = await ctx.db
 			.query("users")
 			.filter((q) => q.eq(q.field("name"), "CodeCraft "))
@@ -230,12 +230,27 @@ export const createUserConversation = mutation({
 			return existingConversation._id;
 		}
 
-		
+
 		const conversationId = await ctx.db.insert("conversations", {
 			participants: [currentUser._id, admin._id],
 			isGroup: false,
 		});
 
 		return conversationId;
+	},
+});
+
+export const deleteConversation = mutation({
+	args: { conversationId: v.id("conversations") },
+	handler: async (ctx, { conversationId }) => {
+		const messages = await ctx.db.query("messages")
+			.withIndex("by_conversation", q => q.eq("conversation", conversationId))
+			.collect();
+
+		for (const msg of messages) {
+			await ctx.db.delete(msg._id);
+		}
+
+		await ctx.db.delete(conversationId);
 	},
 });

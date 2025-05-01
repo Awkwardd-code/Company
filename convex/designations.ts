@@ -41,6 +41,14 @@ export const updateDesignation = mutation({
 export const deleteDesignation = mutation({
   args: { designationId: v.id("designations") },
   handler: async (ctx, { designationId }) => {
-    return await ctx.db.delete(designationId);
+    const professionals = await ctx.db.query("professionals").collect();
+    for (const pro of professionals) {
+      if (pro.designations.includes(designationId)) {
+        const updated = pro.designations.filter(id => id !== designationId);
+        await ctx.db.patch(pro._id, { designations: updated });
+      }
+    }
+
+    await ctx.db.delete(designationId);
   },
 });
