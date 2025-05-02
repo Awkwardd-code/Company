@@ -154,7 +154,7 @@ function Header() {
 
             {/* Blogs */}
             <Link
-              href="/blogs"
+              href="/blog"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/blogs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
               md:block hidden`}  // Hide on mobile (smaller than md)

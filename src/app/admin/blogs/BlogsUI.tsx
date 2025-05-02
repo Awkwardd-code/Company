@@ -26,6 +26,8 @@ function BlogsUI() {
   const addBlog = useMutation(api.blogs.add);
   const updateBlog = useMutation(api.blogs.update);
   const deleteBlog = useMutation(api.blogs.remove);
+  const auther = useQuery(api.users.getMe);
+  console.log(auther?._id)
   const generateUploadUrl = useMutation(api.blogs.generateUploadUrl);
 
   const [addOpen, setAddOpen] = useState(false);
@@ -63,11 +65,11 @@ function BlogsUI() {
       setIsAuthorLoading(true);
       try {
         if (user && users.length > 0) {
-          const dbUser = users.find(u => u.tokenIdentifier === user.id);
+          const dbUser = auther;
           if (dbUser) {
             setFormData(prev => ({
               ...prev,
-              authorId: dbUser._id
+              authorId: dbUser?._id
             }));
           } else {
             toast.error("User not found in database. Please contact support.");
@@ -395,7 +397,7 @@ function BlogsUI() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-200">Author</label>
                 <Input
-                  value={users.find(u => u._id === formData.authorId)?.name || "You"}
+                  value={auther?.name || "You"}
                   disabled
                   className="bg-[#2a2a3a] border-[#3a3a4a] text-white"
                 />

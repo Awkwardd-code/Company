@@ -49,6 +49,7 @@ export const deleteDesignation = mutation({
       }
     }
 
+    
     await ctx.db.delete(designationId);
   },
 });

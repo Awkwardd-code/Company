@@ -84,7 +84,7 @@ const BottomHeader = () => {
           <Users size={24} />
         </Link>
 
-        <Link href="/blogs" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+        <Link href="/blog" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
           <FileText size={24} />
         </Link>
 
