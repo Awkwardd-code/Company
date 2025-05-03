@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { NextPage } from 'next';
 import { useQuery } from 'convex/react';
-import ProjectCard from '@/components/ProjectCard';
+
 import { api } from '../../../../../convex/_generated/api';
+import ProjectCard from './ProjectCard';
 
 const ProjectsPage: NextPage = () => {
   const [filter, setFilter] = useState<'all' | 'featured'>('all');
@@ -24,7 +25,7 @@ const ProjectsPage: NextPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-20 py-12">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-20 py-12">
         {/* Hero Banner */}
         <div className="bg-gradient-to-r from-white to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white py-12 px-6 md:px-10 lg:px-20 flex flex-col md:flex-row items-start md:items-center justify-between rounded-xl mb-8 shadow-xl dark:shadow-2xl transition-all duration-300 ease-in-out">
           <div>
@@ -41,7 +42,7 @@ const ProjectsPage: NextPage = () => {
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors ${filter === 'all'
               ? 'bg-blue-600 hover:bg-blue-700'
@@ -67,7 +68,7 @@ const ProjectsPage: NextPage = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Our Projects
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects === undefined ? (
               <p>Loading projects...</p> // Handle undefined (loading) state
             ) : (

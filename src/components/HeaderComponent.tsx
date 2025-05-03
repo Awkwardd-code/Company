@@ -10,6 +10,7 @@ import TryUsOutButton from "@/app/(root)/(home)/_components/TryUsOutButton";
 import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import Image from "next/image";
 
 function Header() {
   const { user, isLoaded } = useUser();
@@ -23,20 +24,20 @@ function Header() {
     api.users.getUserByToken,
     isLoggedIn
       ? {
-          tokenIdentifier: user.id,
-        }
+        tokenIdentifier: user.id,
+      }
       : "skip"
   );
   // const showMeeting = true;
 
   const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
-  
+
   // Check if the user is an admin
   const isAdmin = currentUser?.isAdmin;
   // const isAdmin = true;
 
-  
- 
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,17 +71,24 @@ function Header() {
       >
         {/* Logo */}
         <div className="flex items-center gap-4 md:gap-8">
-          <Link href="/" className="flex items-center gap-3 group relative">
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out blur-xl" />
-            <div className="relative bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] p-2 rounded-xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-300 ease-in-out">
-              <Blocks className="size-6 text-blue-400 transform -rotate-6 group-hover:rotate-0 transition-transform duration-300 ease-in-out" />
+          <Link href="/" className="flex items-center gap-4 group relative" aria-label="CodeCraft homepage">
+            {/* Hover Glow */}
+            <div className="absolute -inset-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-all duration-300 blur-xl pointer-events-none" />
+
+            {/* Logo Container */}
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 p-1.5 bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] rounded-xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-300 ease-in-out">
+              <Image
+                src="/logo.png"
+                alt="CodeCraft Logo"
+                fill
+                className="object-contain"
+              />
             </div>
+
+            {/* Title Text */}
             <div className="flex flex-col">
-              <span className="block text-base md:text-lg font-semibold bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text transition-all duration-300 ease-in-out">
+              <span className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text transition-all duration-300">
                 CodeCraft
-              </span>
-              <span className="block text-xs text-blue-400/60 font-medium transition-all duration-300 ease-in-out">
-                Interactive Code Editor
               </span>
             </div>
           </Link>

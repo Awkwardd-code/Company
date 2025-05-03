@@ -59,7 +59,7 @@ const Card = ({ blog }: { blog: Blog }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Link href={`/blogs/${blog.slug}`} className="relative group block" aria-label={`Read ${blog.title}`}>
+      <Link href={`/blog/${blog.slug}`} className="relative group block" aria-label={`Read ${blog.title}`}>
         <div className="bg-white dark:bg-gray-900/80 rounded-xl border border-gray-200 dark:border-gray-700/50 overflow-hidden h-[400px] transition-all duration-300 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1">
           <div className="p-6 space-y-4">
             <div className="flex items-start justify-between">

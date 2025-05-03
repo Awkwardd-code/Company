@@ -133,7 +133,7 @@ const MediaDropdown = () => {
 					<Plus className='text-gray-600 dark:text-gray-400 z-[9999]' />
 				</DropdownMenuTrigger>
 
-				<DropdownMenuContent className="z-[99]">
+				<DropdownMenuContent className="z-[9999]">
 					<DropdownMenuItem onClick={() => imageInput.current!.click()}>
 						<ImageIcon size={18} className='mr-1' /> Photo
 					</DropdownMenuItem>

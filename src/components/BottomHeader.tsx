@@ -1,35 +1,41 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Home, Users, FileText, MessageSquare, Archive, CalendarClock } from "lucide-react";
+import {
+  Home,
+  Users,
+  FileText,
+  MessageSquare,
+  Archive,
+  CalendarClock,
+} from "lucide-react";
 import Link from "next/link";
 import { FiInbox } from "react-icons/fi";
-import { useUser } from "@clerk/nextjs"; // Adjust this to your auth system
+import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { usePathname } from "next/navigation";
 
 const BottomHeader = () => {
   const [isAtFooter, setIsAtFooter] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
 
   const { user } = useUser();
   const isLoggedIn = !!user?.id;
-  
-    const currentUser = useQuery(
-      api.users.getUserByToken,
-      isLoggedIn
-        ? {
-            tokenIdentifier: user.id,
-          }
-        : "skip"
-    );
-    // const showMeeting = true;
-  
-    const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
-    
-    // Check if the user is an admin
-    const isAdmin = currentUser?.isAdmin;
-    // const isAdmin = true;
+
+  const currentUser = useQuery(
+    api.users.getUserByToken,
+    isLoggedIn
+      ? {
+          tokenIdentifier: user.id,
+        }
+      : "skip"
+  );
+
+  const showMeeting =
+    currentUser?.role === "client" || currentUser?.role === "programmer";
+  const isAdmin = currentUser?.isAdmin;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -46,7 +52,9 @@ const BottomHeader = () => {
       const footerRect = footer.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      setIsAtFooter(footerRect.top <= windowHeight && footerRect.bottom >= 0);
+      setIsAtFooter(
+        footerRect.top <= windowHeight && footerRect.bottom >= 0
+      );
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -66,6 +74,13 @@ const BottomHeader = () => {
 
   if (!isMobile) return null;
 
+  const isActive = (path: string) => pathname === path;
+
+  const linkClass = (path: string) =>
+    `flex-1 flex justify-center items-center transform hover:scale-110 ${
+      isActive(path) ? "text-blue-400" : "text-white"
+    }`;
+
   return (
     <div
       className={`w-full bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] p-6 pb-8 backdrop-blur-lg border-t border-white/10 z-50 transition-all duration-500 ease-in-out ${
@@ -75,47 +90,44 @@ const BottomHeader = () => {
       }`}
       style={isAtFooter ? { top: getFooterBottom() } : {}}
     >
-      <nav className="flex justify-between items-center text-white text-lg font-medium" role="navigation" aria-label="Bottom navigation">
-        <Link href="/" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+      <nav
+        className="flex justify-between items-center text-lg font-medium"
+        role="navigation"
+        aria-label="Bottom navigation"
+      >
+        <Link href="/" className={linkClass("/")}>
           <Home size={24} />
         </Link>
 
-        <Link href="/team" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+        <Link href="/team" className={linkClass("/team")}>
           <Users size={24} />
         </Link>
 
-        <Link href="/blog" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+        <Link href="/blog" className={linkClass("/blog")}>
           <FileText size={24} />
         </Link>
 
         {showMeeting && (
-          <Link href="/meetings" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+          <Link href="/meetings" className={linkClass("/meetings")}>
             <CalendarClock size={24} />
           </Link>
         )}
 
-        {/* Conditional Link for Projects or Dashboard */}
         {isAdmin ? (
-          <Link
-            href="/admin"
-            className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110"
-          >
+          <Link href="/admin" className={linkClass("/admin")}>
             <Archive size={24} />
           </Link>
         ) : (
-          <Link
-            href="/projects"
-            className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110"
-          >
+          <Link href="/projects" className={linkClass("/projects")}>
             <Archive size={24} />
           </Link>
         )}
 
-        <Link href="/faqs" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+        <Link href="/faqs" className={linkClass("/faqs")}>
           <MessageSquare size={24} />
         </Link>
 
-        <Link href="/chat" className="flex-1 flex justify-center items-center hover:text-blue-400 transform hover:scale-110">
+        <Link href="/chat" className={linkClass("/chat")}>
           <FiInbox size={24} />
         </Link>
       </nav>

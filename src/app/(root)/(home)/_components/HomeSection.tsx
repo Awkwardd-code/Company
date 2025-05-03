@@ -65,7 +65,7 @@ function HomeSection() {
                 data-aos="fade-up"
                 data-aos-delay="300"
               >
-                Digital Solutions for Your{' '}
+                Digital Solutions for <br /> Your{' '}
                 <span className="txt-type underline" data-wait="3000">
                   {typedText}
                 </span>

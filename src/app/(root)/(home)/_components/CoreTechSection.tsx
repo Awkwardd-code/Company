@@ -288,7 +288,7 @@ export default function CoreTechSection() {
     filter === 'All' ? technologies : technologies.filter((tech) => tech.category === filter);
 
   return (
-    <div className="bg-transparent py-12">
+    <section className="bg-transparent py-12 px-4 sm:px-6 lg:px-8">
       {/* Section Title */}
       <div
         className="relative mx-auto mb-12 max-w-[620px] pt-6 text-center md:mb-20 lg:pt-16"
@@ -318,16 +318,15 @@ export default function CoreTechSection() {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex justify-center gap-4 mb-12">
-        {['All', 'Frontend', 'Backend', 'UI', 'UX'].map((category) => (
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {["All", "Frontend", "Backend", "UI", "UX"].map((category) => (
           <button
             key={category}
             onClick={() => setFilter(category)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${
-              filter === category
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${filter === category
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
           >
             {category}
           </button>
@@ -335,18 +334,18 @@ export default function CoreTechSection() {
       </div>
 
       {/* Technology Cards */}
-      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredTechnologies.map((tech, index) => (
           <div
             key={index}
-            className="bg-gray-800 rounded-lg p-6 flex flex-col gap-4 shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="bg-gray-800 rounded-xl p-6 flex flex-col items-center text-center shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex items-center justify-center">{tech.icon}</div>
-            <h3 className="text-xl font-semibold text-white text-center">{tech.title}</h3>
-            <p className="text-gray-400 text-sm text-center">{tech.description}</p>
+            <div className="mb-4">{tech.icon}</div>
+            <h3 className="text-lg font-semibold text-white">{tech.title}</h3>
+            <p className="text-sm text-gray-400 mt-2">{tech.description}</p>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

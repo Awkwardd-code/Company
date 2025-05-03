@@ -25,6 +25,7 @@ interface Conversation {
 const ChatPage: React.FC = () => {
   const { user, isLoaded } = useUser();
   const [hasConversation, setHasConversation] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const conversation = useQuery(
     api.conversations.getUserConversation,
@@ -53,6 +54,19 @@ const ChatPage: React.FC = () => {
     api.users.getUserById,
     hasConversation && otherUserId ? { userId: otherUserId } : "skip"
   ) as User | undefined | "skip";
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -103,7 +117,17 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-[80vh] w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div
+      className="flex flex-col w-full mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+      style={{
+        minHeight: isMobile
+          ? "calc(100vh - 95px - 85px - env(safe-area-inset-top) - env(safe-area-inset-bottom))"
+          : "calc(100vh - 95px - env(safe-area-inset-top))",
+        maxHeight: isMobile
+          ? "calc(100vh - 95px - 85px - env(safe-area-inset-top) - env(safe-area-inset-bottom))"
+          : "calc(100vh - 95px - env(safe-area-inset-top))",
+      }}
+    >
       {/* Header (inside ChatPage) */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
         <div className="flex gap-3 items-center overflow-hidden">
