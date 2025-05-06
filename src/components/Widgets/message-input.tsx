@@ -109,6 +109,7 @@ const MessageInput = () => {
             <Button
               type="submit"
               size="sm"
+              disabled
               className="bg-transparent text-foreground hover:bg-transparent"
             >
               <Mic />

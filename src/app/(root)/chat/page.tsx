@@ -29,9 +29,7 @@ function Page() {
     <>
       {isSmallScreen && (
         <div>
-          <Header />
           <ChatPage />
-          <BottomHeader />
         </div>
       )}
     </>

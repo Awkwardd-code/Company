@@ -33,17 +33,17 @@ const TestimonialSection: React.FC = () => {
   const testimonials: TestimonialItem[] = [
     {
       quote:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum sapien ac leo cursus dignissim.",
-      name: "Deniyal Shifer",
-      title: "Founder @democompany",
-      imageSrc: "/images/testimonial/image-1.jpg",
+        "In today's fast-paced digital world, effective marketing is about crafting compelling stories that resonate with our audience. As the Marketing Officer of our software company, my mission is to showcase how our innovative solutions empower businesses to thrive, connecting with customers through authenticity, creativity, and strategic vision.",
+      name: "Jayed Bin Islam",
+      title: "CMO @codecraft",
+      imageSrc: "/images/testimonial/jayed.jpeg",
     },
     {
       quote:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      name: "John Doe",
-      title: "CEO @examplecorp",
-      imageSrc: "/images/testimonial/image-1.jpg",
+        "In a world overflowing with information, our role is to curate clarity and insight. As the Editorial Head of our software company, I strive to shape narratives that not only inform but also inspire, ensuring our content reflects the innovation and excellence at the core of our brand.",
+      name: "Tahmid Hasan Showmik",
+      title: "Editorial Head @codecraft",
+      imageSrc: "/images/testimonial/shoumik.jpeg",
     },
   ];
 
@@ -75,14 +75,15 @@ const TestimonialSection: React.FC = () => {
           data-wow-delay=".2s"
         >
           <span className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] leading-[1] font-extrabold opacity-20 bg-gradient-to-b from-[rgba(74,108,247,0.4)] to-[rgba(74,108,247,0)] bg-clip-text text-transparent">
-            BLOGS
+            
+            Testimonials
           </span>
           <h2 className="font-heading text-dark mb-5 text-3xl font-semibold sm:text-4xl md:text-[50px] md:leading-[60px] dark:text-white">
-            Latest News & Articles From Our Blog
+            
+          Trusted voices validate our innovative solutions.
           </h2>
           <p className="text-dark-text text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor eros. Donec vitae tortor
-            lacus. Phasellus aliquam ante in maximus.
+          "Innovate, Create, Succeed: Crafting cutting-edge software to empower businesses, streamline challenges, and build a smarter, connected future together."
           </p>
         </div>
 

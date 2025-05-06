@@ -17,10 +17,14 @@ interface User {
   _id: Id<"users">;
   name?: string;
   image?: string;
+  isAdmin?: boolean;
 }
 
 interface Conversation {
   participants: Id<"users">[];
+  isGroup: boolean;
+  groupName?: string;
+  groupImage?: string;
 }
 
 interface ChatPanelProps {
@@ -57,10 +61,10 @@ const ChatWidget: React.FC = () => {
       typeof conversation !== "string" &&
       Array.isArray(conversation.participants) &&
       me &&
-      typeof me !== "string"
+      typeof me !== "string" &&
+      !conversation.isGroup
     ) {
-      const typedMe = me as User;
-      return conversation.participants.find((id) => id !== typedMe._id) || null;
+      return conversation.participants.find((id) => id !== me._id) || null;
     }
     return null;
   }, [conversation, me]);
@@ -82,25 +86,25 @@ const ChatWidget: React.FC = () => {
     }
   }, [conversation]);
 
-  const conversationName = useMemo(
-    () =>
-      user
-        ? hasConversation && otherUser && typeof otherUser !== "string"
-          ? otherUser.name
-          : "Conversation"
-        : "Guest",
-    [user, otherUser, hasConversation]
-  );
+  const conversationName = useMemo(() => {
+    if (!user || !hasConversation || typeof conversation !== "object") return "Conversation";
 
-  const conversationImage = useMemo(
-    () =>
-      user
-        ? hasConversation && otherUser && typeof otherUser !== "string"
-          ? otherUser.image
-          : "/placeholder.png"
-        : "/placeholder.png",
-    [user, otherUser, hasConversation]
-  );
+    if (conversation.isGroup) {
+      return "CodeCraft";
+    }
+
+    return otherUser && typeof otherUser !== "string" ? otherUser.name ?? "Conversation" : "Conversation";
+  }, [user, otherUser, hasConversation, conversation]);
+
+  const conversationImage = useMemo(() => {
+    if (!user || !hasConversation || typeof conversation !== "object") return "/placeholder.png";
+
+    if (conversation.isGroup) {
+      return conversation.groupImage || "/placeholder.png";
+    }
+
+    return otherUser && typeof otherUser !== "string" ? otherUser.image ?? "/placeholder.png" : "/placeholder.png";
+  }, [user, otherUser, hasConversation, conversation]);
 
   // ✅ Auto-close chat if screen size becomes mobile
   useEffect(() => {
@@ -113,14 +117,13 @@ const ChatWidget: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ Skip rendering for admin users
   if (!isLoaded || conversation === undefined || me === undefined) {
-    return (
-      <div className="fixed bottom-5 right-5 z-[1000] animate-pulse hidden md:block">
-        <div className="bg-blue-600 text-white p-4 rounded-full shadow-lg">
-          <MessageSquare className="w-6 h-6" />
-        </div>
-      </div>
-    );
+    return null;
+  }
+  
+  if (typeof me !== "string" && me.isAdmin) {
+    return null;
   }
 
   if (conversation === null || me === null) {
@@ -137,8 +140,8 @@ const ChatWidget: React.FC = () => {
       <ChatPanel
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        conversationName={conversationName || "Conversation"}
-        conversationImage={conversationImage || "/placeholder.png"}
+        conversationName={conversationName}
+        conversationImage={conversationImage}
       >
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto">
@@ -183,8 +186,6 @@ const ChatToggleButton: React.FC<ChatToggleButtonProps> = ({
   );
 };
 
-
-
 const ChatPanel: React.FC<ChatPanelProps> = ({
   isOpen,
   setIsOpen,
@@ -195,11 +196,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   <div
     className={`fixed bottom-5 right-5 md:right-16 z-[999] transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 shadow-xl border rounded-xl flex flex-col overflow-hidden
       ${isOpen
-        ? "h-[90vh] w-[95vw] sm:w-[80vw] md:w-[50vw] lg:w-[40vw] opacity-100"
+        ? "h-[85vh] w-[95vw] sm:w-[80vw] md:w-[50vw] lg:w-[40vw] opacity-100"
         : "h-0 w-0 opacity-0"
       }`}
     style={{
-      top: isOpen ? "5vh" : "auto",
+      top: isOpen ? "13vh" : "auto",
       visibility: isOpen ? "visible" : "hidden",
     }}
     id="chat-panel"

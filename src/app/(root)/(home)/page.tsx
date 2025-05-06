@@ -12,7 +12,6 @@ import BlogSection from './_components/BlogSection'
 import CoreTechSection from './_components/CoreTechSection'
 import SupportSection from './_components/SupportSection'
 import CTASection from './_components/CTASection'
-import BottomHeader from '@/components/BottomHeader'
 import Footer from '@/components/Footer'
 import ChatWidget from '@/components/ChatWidget'
 
@@ -23,6 +22,7 @@ function HomePage() {
     return (
         <div>
             <Header/>
+            
             <HomeSection/>
             <FeaturedSection/>
             <PortfolioSection/>
@@ -33,7 +33,7 @@ function HomePage() {
             <CoreTechSection/>
             <SupportSection/>
             <CTASection/>
-            <BottomHeader/>
+            <ChatWidget/>
             <Footer/>
            
             

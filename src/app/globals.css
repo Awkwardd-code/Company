@@ -263,6 +263,15 @@ body.sidebar-expanded .sidebar-text {
   opacity: 1;
 }
 
+
+@custom-variant right-sidebar-expanded (&:is(.right-sidebar-expanded *));
+
+body.right-sidebar-expanded .sidebar {
+  width: 20rem; /* Equivalent to w-64 */
+}
+body.right-sidebar-expanded .sidebar-text {
+  opacity: 1;
+}
 /* Gradient underline for active nav link */
 .underline-gradient {
   position: relative;

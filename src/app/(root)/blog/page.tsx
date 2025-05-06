@@ -1,10 +1,10 @@
 import React from 'react'
 
-import BottomHeader from '@/components/BottomHeader'
 import Footer from '@/components/Footer'
 import Header from '@/components/HeaderComponent'
 
 import BlogPage from './_components/BlogCard'
+import ChatWidget from '@/components/ChatWidget'
 
 
 
@@ -13,7 +13,7 @@ function Blog() {
     <div>
         <Header/>
         <BlogPage/>
-        <BottomHeader/>
+        <ChatWidget/>
         <Footer/>
     </div>
   )

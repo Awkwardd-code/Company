@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogHeader,
@@ -151,7 +152,7 @@ function InterviewScheduleUI() {
 
           <DialogContent className="sm:max-w-[500px] h-[calc(100vh-200px)] overflow-auto">
             <DialogHeader>
-              <DialogTitle>Schedule Interview</DialogTitle>
+              <DialogTitle>Schedule Meeting</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               {/* INTERVIEW TITLE */}
@@ -177,13 +178,13 @@ function InterviewScheduleUI() {
 
               {/* CANDIDATE */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Candidate</label>
+                <label className="text-sm font-medium">Client</label>
                 <Select
                   value={formData.candidateId}
                   onValueChange={(candidateId) => setFormData({ ...formData, candidateId })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select candidate" />
+                    <SelectValue placeholder="Select Client" />
                   </SelectTrigger>
                   <SelectContent>
                     {candidates.map((candidate) => (
@@ -197,7 +198,7 @@ function InterviewScheduleUI() {
 
               {/* INTERVIEWERS */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Interviewers</label>
+                <label className="text-sm font-medium">Programmers</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {selectedInterviewers.map((interviewer) => (
                     <div
@@ -219,7 +220,7 @@ function InterviewScheduleUI() {
                 {availableInterviewers.length > 0 && (
                   <Select onValueChange={addInterviewer}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Add interviewer" />
+                      <SelectValue placeholder="Add Programmer" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableInterviewers.map((interviewer) => (
@@ -233,39 +234,62 @@ function InterviewScheduleUI() {
               </div>
 
               {/* DATE & TIME */}
-              <div className="flex gap-4">
-                {/* CALENDAR */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date</label>
-                  <Calendar
-                    mode="single"
-                    selected={formData.date}
-                    onSelect={(date) => date && setFormData({ ...formData, date })}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-md border"
-                  />
-                </div>
-
-                {/* TIME */}
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Time</label>
-                  <Select
-                    value={formData.time}
-                    onValueChange={(time) => setFormData({ ...formData, time })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIME_SLOTS.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* CALENDAR */}
+              <div className="space-y-2 w-full">
+                <label className="text-sm font-medium text-gray-300">Date</label>
+                <Calendar
+                  mode="single"
+                  selected={formData.date}
+                  onSelect={(date) => date && setFormData({ ...formData, date })}
+                  disabled={(date) => date < new Date()}
+                  className={cn(
+                    "w-full rounded-md border border-[#313244] bg-[#2a2a3a] text-gray-100 p-3"
+                  )}
+                  classNames={{
+                    months: "w-full flex flex-col",
+                    month: "w-full space-y-4",
+                    table: "w-full border-collapse",
+                    tbody: "w-full",
+                    row: "w-full flex mt-2",
+                    cell: cn("flex-1 text-center p-0 m-0.5", "min-w-0"),
+                    day: cn(
+                      "w-full h-9 flex items-center justify-center text-sm p-1",
+                      "text-gray-100 hover:bg-[#3a3a4a] rounded",
+                      "aria-selected:bg-[#4a4a5a] aria-selected:text-white",
+                      "disabled:text-gray-500 disabled:opacity-50"
+                    ),
+                    head_row: "w-full flex",
+                    head_cell: cn(
+                      "flex-1 text-center text-muted-foreground text-[0.8rem] font-normal m-0.5"
+                    ),
+                    day_range_start: "rounded-l bg-[#4a4a5a] text-white",
+                    day_range_end: "rounded-r bg-[#4a4a5a] text-white",
+                    day_range_middle: "bg-[#3a3a4a] text-gray-100",
+                  }}
+                />
+              </div>
+              {/* TIME */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Time</label>
+                <Select
+                  value={formData.time}
+                  onValueChange={(time) => setFormData({ ...formData, time })}
+                >
+                  <SelectTrigger className="bg-[#2a2a3a] border-[#313244] text-white w-full">
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#2a2a3a] border-[#313244] text-white max-h-60 overflow-y-auto">
+                    {TIME_SLOTS.map((time) => (
+                      <SelectItem
+                        key={time}
+                        value={time}
+                        className="hover:bg-[#3a3a4a] text-white"
+                      >
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* ACTION BUTTONS */}

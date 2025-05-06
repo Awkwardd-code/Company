@@ -96,9 +96,7 @@ const FeaturedSection = () => {
             Our Unique & Awesome Core Features
           </h2>
           <p className="text-dark-text text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis
-            tortor eros. Donec vitae tortor lacus. Phasellus aliquam ante in
-            maximus.
+          Discover powerful features: intuitive design, seamless integration, robust security, and scalable solutions to elevate your business with cutting-edge technology.
           </p>
         </div>
 

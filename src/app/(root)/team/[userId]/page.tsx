@@ -1,8 +1,8 @@
 import Header from '@/components/HeaderComponent'
 import React from 'react'
-import BottomHeader from '@/components/BottomHeader'
 import Footer from '@/components/Footer'
 import AuthorPage from './AutherPage'
+import ChatWidget from '@/components/ChatWidget'
 
 
 function Projects() {
@@ -10,7 +10,7 @@ function Projects() {
     <div>
       <Header/>
       <AuthorPage/>
-      <BottomHeader/>
+      <ChatWidget/>
       <Footer/>
     </div>
   )

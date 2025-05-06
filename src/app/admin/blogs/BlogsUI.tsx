@@ -27,7 +27,7 @@ function BlogsUI() {
   const updateBlog = useMutation(api.blogs.update);
   const deleteBlog = useMutation(api.blogs.remove);
   const auther = useQuery(api.users.getMe);
-  console.log(auther?._id)
+
   const generateUploadUrl = useMutation(api.blogs.generateUploadUrl);
 
   const [addOpen, setAddOpen] = useState(false);

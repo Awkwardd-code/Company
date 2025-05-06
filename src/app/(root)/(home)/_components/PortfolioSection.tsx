@@ -57,14 +57,14 @@ const PortfolioSection: React.FC = () => {
           data-wow-delay=".2s"
         >
           <span className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] leading-[1] font-extrabold opacity-20 bg-gradient-to-b from-[rgba(74,108,247,0.4)] to-[rgba(74,108,247,0)] bg-clip-text text-transparent">
-            BLOGS
+            Producsts
           </span>
           <h2 className="font-heading text-dark mb-5 text-3xl font-semibold sm:text-4xl md:text-[50px] md:leading-[60px] dark:text-white">
-            Latest News & Articles From Our Blog
+
+            Innovative, scalable software solutions.
           </h2>
           <p className="text-dark-text text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor eros. Donec vitae tortor
-            lacus. Phasellus aliquam ante in maximus.
+            Explore our products: innovative software, seamless integrations, scalable platforms, and robust tools designed to empower your business success.
           </p>
         </div>
 
@@ -75,33 +75,29 @@ const PortfolioSection: React.FC = () => {
             data-wow-delay=".2s"
           >
             <button
-              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${
-                filter === "*" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
-              }`}
+              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${filter === "*" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
+                }`}
               onClick={() => setFilter("*")}
             >
               All
             </button>
             <button
-              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${
-                filter === ".branding" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
-              }`}
+              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${filter === ".branding" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
+                }`}
               onClick={() => setFilter(".branding")}
             >
               Branding
             </button>
             <button
-              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${
-                filter === ".digital" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
-              }`}
+              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${filter === ".digital" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
+                }`}
               onClick={() => setFilter(".digital")}
             >
               Digital
             </button>
             <button
-              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${
-                filter === ".ecom" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
-              }`}
+              className={`font-heading text-dark px-4 sm:px-5 py-2 text-sm sm:text-base whitespace-nowrap dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative ${filter === ".ecom" ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600" : ""
+                }`}
               onClick={() => setFilter(".ecom")}
             >
               eCommerce

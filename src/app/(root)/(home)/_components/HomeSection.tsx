@@ -76,9 +76,7 @@ function HomeSection() {
                 data-aos="fade-up"
                 data-aos-delay="400"
               >
-                Handcrafted Tailwind CSS template for your next Startup, Business,
-                Agency, or SaaS Website. Comes with a refreshing design and everything
-                you need to kickstart your next web project.
+                CodeCraft thrives on innovation, crafting solutions that empower progress. With every line of code, we transform ideas into reality, driving success for clients. Our motto reflects a commitment to excellence, pushing boundaries to shape a smarter, connected future through technology.
               </p>
 
               <div

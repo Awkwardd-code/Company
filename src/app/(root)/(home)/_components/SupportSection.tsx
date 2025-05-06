@@ -73,7 +73,7 @@ const SupportSection: FC = () => {
   };
 
   // Decrypt email for mailto link (for user interaction)
-  const email = 'support@example.com';
+  const email = 'info.codecraft.soft@gmail.com';
   const encodedEmail = encodeEmail(email);
 
   return (
@@ -104,7 +104,7 @@ const SupportSection: FC = () => {
               <span className="bg-dark mr-4 h-1 w-24 dark:bg-white"></span>
               <Link
                 href={`mailto:${email}`}
-                className="font-heading text-dark text-xl md:text-3xl lg:text-2xl xl:text-3xl dark:text-white hover:text-blue-600 transition-colors duration-300"
+                className="font-heading text-dark text-xl md:text-2xl lg:text-2xl xl:text-3xl dark:text-white hover:text-blue-600 transition-colors duration-300"
                 dangerouslySetInnerHTML={{ __html: encodedEmail }}
               />
               <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -117,11 +117,11 @@ const SupportSection: FC = () => {
         {/* Contact Information and Social Links */}
         <div className="max-w-5xl mx-auto mb-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
               <h3 className="font-heading text-dark mb-3 text-lg font-semibold dark:text-white">
                 Email Address
               </h3>
-              <p className="text-dark-text text-base font-medium">
+              <p className="text-dark-text text-base font-sm">
                 <Link href={`mailto:${email}`} className="hover:text-blue-600 transition-colors duration-300">
                   {email}
                 </Link>

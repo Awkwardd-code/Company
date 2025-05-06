@@ -11,6 +11,7 @@ import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Image from "next/image";
+import Sidebar from "./Sidebar";
 
 function Header() {
   const { user, isLoaded } = useUser();
@@ -62,7 +63,7 @@ function Header() {
       <div
         ref={headerRef}
         className={`flex items-center justify-between 
-          bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] backdrop-blur-xl p-4 md:p-6 mb-4 rounded-lg
+          bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] backdrop-blur-xl p-2 md:p-6 mb-4 rounded-lg
           transition box-shadow opacity transform duration-300 ease-in-out z-50 w-full
           ${isSticky
             ? "fixed top-0 left-0 right-0 shadow-lg opacity-95 -translate-y-1 scale-[0.98]"
@@ -188,6 +189,7 @@ function Header() {
           <div className="flex items-center gap-3">
             <ModeToggle />
             {user ? <HeaderProfileBtn /> : <TryUsOutButton />}
+            <Sidebar/>
           </div>
         </div>
       </div>

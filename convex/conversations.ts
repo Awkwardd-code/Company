@@ -149,47 +149,54 @@ export const getUserConversation = query({
 
 		if (!user) throw new ConvexError("User not found");
 
+		// Fetch conversations where the user is a participant (both group and non-group)
 		const conversations = await ctx.db.query("conversations").collect();
 
+		// Find the conversation where the user is a participant
 		const myConversation = conversations.find((conversation) => {
-			return !conversation.isGroup && conversation.participants.includes(user._id);
+			return conversation.participants.includes(user._id);
 		});
 
 		if (!myConversation) {
 			return { message: "No conversation found for this user" };
 		}
 
+		// Fetch the last message for the found conversation
 		const lastMessage = await ctx.db
 			.query("messages")
 			.filter((q) => q.eq(q.field("conversation"), myConversation._id))
 			.order("desc")
 			.take(1);
 
-		// Fetch the sender's full user details
+		// Fetch the sender's full user details for the last message
 		const senderId = lastMessage[0]?.sender;
 		const senderDetails = senderId
 			? await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), senderId)).take(1)
 			: null;
 
+		// Return the conversation details with the last message and sender details
 		return {
 			...myConversation,
-			lastMessage: lastMessage[0] ? {
-				...lastMessage[0],
-				sender: senderDetails ? senderDetails[0] : null,
-			} : null,
+			lastMessage: lastMessage[0]
+				? {
+					...lastMessage[0],
+					sender: senderDetails ? senderDetails[0] : null,
+				}
+				: null,
 		};
 	},
 });
 
 
+
 export const createUserConversation = mutation({
 	args: {},
 	handler: async (ctx, args) => {
-
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
 			throw new Error("User not authenticated");
 		}
+
 		const cleanToken = identity.tokenIdentifier.replace(/^https?:\/\//, "");
 
 		const currentUser = await ctx.db
@@ -203,42 +210,44 @@ export const createUserConversation = mutation({
 			throw new Error("Current user not found");
 		}
 
-
-		const admin = await ctx.db
+		const admins = await ctx.db
 			.query("users")
-			.filter((q) => q.eq(q.field("name"), "CodeCraft "))
-			.first();
+			.filter((q) => q.eq(q.field("isAdmin"), true))
+			.collect();
 
-		if (!admin) {
-			throw new Error("Admin user not found");
+		if (admins.length === 0) {
+			throw new Error("No admin users found");
 		}
 
-
+		// Check if the group conversation already exists
 		const allConversations = await ctx.db.query("conversations").collect();
 
-		const existingConversation = allConversations.find((conv) => {
-			if (conv.isGroup) return false;
+		const existingGroup = allConversations.find((conv) => {
+			if (!conv.isGroup) return false;
 			const participantIds = conv.participants.map((id) => id.toString());
+			const allIds = [currentUser._id.toString(), ...admins.map(a => a._id.toString())];
 			return (
-				participantIds.includes(currentUser._id.toString()) &&
-				participantIds.includes(admin._id.toString()) &&
-				participantIds.length === 2
+				participantIds.length === allIds.length &&
+				allIds.every(id => participantIds.includes(id))
 			);
 		});
 
-		if (existingConversation) {
-			return existingConversation._id;
+		if (existingGroup) {
+			return existingGroup._id;
 		}
 
-
-		const conversationId = await ctx.db.insert("conversations", {
-			participants: [currentUser._id, admin._id],
-			isGroup: false,
+		const newConversationId = await ctx.db.insert("conversations", {
+			participants: [currentUser._id, ...admins.map(admin => admin._id)],
+			isGroup: true,
+			groupName: currentUser.name,
+			groupImage: currentUser.image,
+			// admin: undefined or omit it
 		});
 
-		return conversationId;
+		return newConversationId;
 	},
 });
+
 
 export const deleteConversation = mutation({
 	args: { conversationId: v.id("conversations") },

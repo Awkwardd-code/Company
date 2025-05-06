@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -47,6 +47,7 @@ function InterviewScheduleUI() {
     const [isCreating, setIsCreating] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isColumnLayout, setIsColumnLayout] = useState(false);
+    const me = useQuery(api.users.getMe);
 
     const interviews = useQuery(api.interviews.getAllInterviews) as Interview[] | null ?? [];
     const users = useQuery(api.users.getUsers) ?? [];
@@ -70,7 +71,6 @@ function InterviewScheduleUI() {
             toast.error("Please select both candidate and at least one interviewer");
             return;
         }
-
         setIsCreating(true);
 
         try {
@@ -233,7 +233,7 @@ function InterviewScheduleUI() {
                             {/* CANDIDATE */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Candidate
+                                    Client
                                 </label>
                                 <Select
                                     value={formData.candidateId}
@@ -242,7 +242,7 @@ function InterviewScheduleUI() {
                                     }
                                 >
                                     <SelectTrigger className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200">
-                                        <SelectValue placeholder="Select candidate" />
+                                        <SelectValue placeholder="Select Client" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white max-h-60 overflow-y-auto">
                                         {candidates.map((candidate) => (
@@ -261,7 +261,7 @@ function InterviewScheduleUI() {
                             {/* INTERVIEWERS */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Interviewers
+                                    Programmers
                                 </label>
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {selectedInterviewers.map((interviewer) => (
@@ -285,7 +285,7 @@ function InterviewScheduleUI() {
                                 {availableInterviewers.length > 0 && (
                                     <Select onValueChange={addInterviewer}>
                                         <SelectTrigger className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200">
-                                            <SelectValue placeholder="Add interviewer" />
+                                            <SelectValue placeholder="Add Programmer" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
                                             {availableInterviewers.map((interviewer) => (
@@ -381,7 +381,7 @@ function InterviewScheduleUI() {
                                             Scheduling...
                                         </>
                                     ) : (
-                                        "Schedule Interview"
+                                        "Schedule Meeting"
                                     )}
                                 </Button>
                             </div>
