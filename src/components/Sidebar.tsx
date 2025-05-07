@@ -16,6 +16,7 @@ function RightSidebar({ variant = 'default' }: RightSidebarProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const sidebar = useRef<HTMLDivElement | null>(null);
 
@@ -37,20 +38,36 @@ function RightSidebar({ variant = 'default' }: RightSidebarProps) {
   const storedSidebarExpanded = typeof window !== 'undefined' ? localStorage.getItem('right-sidebar-expanded') : null;
   const [sidebarExpanded, setSidebarExpanded] = useState(storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true');
 
-  // Check screen size and clear localStorage on large screens
+  // Check screen size and update localStorage for medium screens
   useEffect(() => {
     const checkScreenSize = () => {
-      const largeScreen = window.innerWidth >= 1024; // lg breakpoint
-      setIsLargeScreen(largeScreen);
-      if (largeScreen && typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      const isLarge = width >= 1024; // lg breakpoint
+      const isMedium = width >= 768 && width < 1024; // md to lg breakpoint
+      const isMobile = width < 768; // sm breakpoint and below
+      setIsLargeScreen(isLarge);
+      setIsMobileScreen(isMobile);
+
+      if (typeof window !== 'undefined') {
         try {
-          localStorage.removeItem('right-sidebar-expanded');
           const body = document.querySelector('body');
-          if (body) {
-            body.classList.remove('right-sidebar-expanded');
+          if (isMedium) {
+            // Set right-sidebar-expanded to true for medium screens
+            localStorage.setItem('right-sidebar-expanded', 'true');
+            setSidebarExpanded(true);
+            if (body) {
+              body.classList.add('right-sidebar-expanded');
+            }
+          } else if (isLarge) {
+            // Clear localStorage and reset for large screens
+            localStorage.removeItem('right-sidebar-expanded');
+            setSidebarExpanded(false);
+            if (body) {
+              body.classList.remove('right-sidebar-expanded');
+            }
           }
         } catch (e) {
-          console.error('Failed to clear localStorage:', e);
+          console.error('Failed to access localStorage:', e);
         }
       }
     };
@@ -121,35 +138,37 @@ function RightSidebar({ variant = 'default' }: RightSidebarProps) {
   return (
     <div>
       {/* Menu button (mobile only, styled like TryUsOutButton) */}
-      <button
-        ref={trigger}
-        role="button"
-        tabIndex={0}
-        className={`relative group inline-flex items-center gap-2 px-2 py-2 rounded-lg border border-blue-400/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 text-sm sm:text-base font-medium text-blue-300 hover:text-white transition-all duration-300 vibrate-animation cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400`}
-        onClick={toggleSidebar}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleSidebar();
-          }
-        }}
-        aria-controls="sidebar"
-        aria-expanded={sidebarOpen}
-      >
-        <span
-          className="absolute -inset-1 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-md transition-all duration-500"
-        />
-        <span className="relative z-10 hidden sm:block">Menu</span>
-        <svg
-          className="w-5 h-5 relative z-10 transform group-hover:translate-x-2 transition-transform duration-300"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+      {isMobileScreen && (
+        <button
+          ref={trigger}
+          role="button"
+          tabIndex={0}
+          className={`relative group inline-flex items-center gap-2 px-2 py-2 rounded-lg border border-blue-400/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 text-sm sm:text-base font-medium text-blue-300 hover:text-white transition-all duration-300 vibrate-animation cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400`}
+          onClick={toggleSidebar}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleSidebar();
+            }
+          }}
+          aria-controls="sidebar"
+          aria-expanded={sidebarOpen}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+          <span
+            className="absolute -inset-1 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-md transition-all duration-500"
+          />
+          <span className="relative z-10 hidden sm:block">Menu</span>
+          <svg
+            className="w-5 h-5 relative z-10 transform group-hover:translate-x-2 transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      )}
 
       {/* Sidebar backdrop (mobile only) */}
       <div

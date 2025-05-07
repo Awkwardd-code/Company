@@ -30,9 +30,11 @@ export default defineSchema({
     userId: v.id("users"),
     name: v.string(),
     url: v.string(),
+    coverImage: v.optional(v.string()),
+    createdAt: v.optional(v.float64()),
+    updatedAt: v.optional(v.float64()),
   }),
-
-
+  
   professionals: defineTable({
     bio: v.string(),
     userId: v.id("users"),

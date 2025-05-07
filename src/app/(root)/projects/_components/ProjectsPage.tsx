@@ -11,9 +11,9 @@ const ProjectsPage: NextPage = () => {
   const [filter, setFilter] = useState<'all' | 'featured'>('all');
 
   // Fetch the list of projects from Convex
-  const projects = useQuery(api.projects.getProjects);  // No need to access `data` here
+  const projects = useQuery(api.projects.getProjects);
 
-  const totalProjects = projects ? projects.length : 0;
+  // Featured projects (first 3 for simplicity, could be enhanced with a 'featured' flag)
   const featuredProjects = projects?.slice(0, 3) || [];
 
   return (
@@ -44,19 +44,17 @@ const ProjectsPage: NextPage = () => {
         {/* Filter Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
-            className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors ${filter === 'all'
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'bg-gray-700 hover:bg-gray-600'
-              }`}
+            className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors ${
+              filter === 'all' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-700 hover:bg-gray-600'
+            }`}
             onClick={() => setFilter('all')}
           >
             All Projects
           </button>
           <button
-            className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors ${filter === 'featured'
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'bg-gray-700 hover:bg-gray-600'
-              }`}
+            className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors ${
+              filter === 'featured' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-700 hover:bg-gray-600'
+            }`}
             onClick={() => setFilter('featured')}
           >
             Featured Projects
@@ -68,17 +66,29 @@ const ProjectsPage: NextPage = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Our Projects
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects === undefined ? (
-              <p>Loading projects...</p> // Handle undefined (loading) state
-            ) : (
-              [...Array(filter === 'all' ? totalProjects : featuredProjects.length)].map((_, i) => (
-                <div key={i}>
-                  <ProjectCard project={filter === 'all' ? projects[i] : featuredProjects[i]} />
+          {projects === undefined ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Skeleton placeholders for loading state */}
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-[#2a2a3a] border border-[#313244] rounded-lg flex flex-col gap-4 max-w-sm w-full animate-pulse"
+                >
+                  <div className="w-full h-48 bg-[#3a3a4a] rounded-md"></div>
+                  <div className="h-6 bg-[#3a3a4a] rounded w-3/4"></div>
+                  <div className="h-4 bg-[#3a3a4a] rounded w-full"></div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          ) : projects.length === 0 ? (
+            <p className="text-gray-600 dark:text-gray-400 text-center">No projects available.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {(filter === 'all' ? projects : featuredProjects).map((project) => (
+                <ProjectCard key={project._id} project={project} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

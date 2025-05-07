@@ -142,6 +142,16 @@ export const editUser = mutation({
 });
 
 
+export const getUserByTokenIdentifier = query({
+    args: { tokenIdentifier: v.string() },
+    handler: async (ctx, { tokenIdentifier }) => {
+        return await ctx.db
+            .query("users")
+            .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", tokenIdentifier))
+            .first();
+    },
+});
+
 
 export const setUserOnline = internalMutation({
     args: { tokenIdentifier: v.string() },
@@ -176,7 +186,7 @@ export const setUserOffline = internalMutation({
                 q.eq("tokenIdentifier", cleanToken)
             )
             .unique();
-            
+
         if (!user) {
             throw new ConvexError("User not found");
         }
