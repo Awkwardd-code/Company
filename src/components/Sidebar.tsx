@@ -47,12 +47,12 @@ function RightSidebar({ variant = 'default' }: RightSidebarProps) {
       const isMobile = width < 768; // sm breakpoint and below
       setIsLargeScreen(isLarge);
       setIsMobileScreen(isMobile);
-
+  
       if (typeof window !== 'undefined') {
         try {
           const body = document.querySelector('body');
-          if (isMedium) {
-            // Set right-sidebar-expanded to true for medium screens
+          if (isMobile || isMedium) {
+            // Set right-sidebar-expanded to true for mobile and medium screens
             localStorage.setItem('right-sidebar-expanded', 'true');
             setSidebarExpanded(true);
             if (body) {
@@ -71,7 +71,7 @@ function RightSidebar({ variant = 'default' }: RightSidebarProps) {
         }
       }
     };
-
+  
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
