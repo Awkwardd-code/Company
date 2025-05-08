@@ -11,12 +11,21 @@ import MessageContainer from "@/components/Widgets/message-container";
 import DummyMessageInput from "@/components/Widgets/DummyMessageInput";
 import MessageInput from "@/components/Widgets/message-input";
 import LoaderUI from "@/components/LoaderUI";
+import TryUsOutButton from "../../(home)/_components/TryUsOutButton";
 
 // Types
 interface User {
   _id: Id<"users">;
   name?: string;
   image?: string;
+  isAdmin?: boolean;
+}
+
+interface Conversation {
+  participants: Id<"users">[];
+  isGroup: boolean;
+  groupName?: string;
+  groupImage?: string;
 }
 
 interface Conversation {
@@ -44,7 +53,8 @@ const ChatPage: React.FC = () => {
       typeof conversation !== "string" &&
       Array.isArray(conversation.participants) &&
       me &&
-      typeof me !== "string"
+      typeof me !== "string" &&
+      !conversation.isGroup
     ) {
       return conversation.participants.find((id) => id !== me._id) || null;
     }
@@ -81,26 +91,47 @@ const ChatPage: React.FC = () => {
     }
   }, [conversation]);
 
-  const conversationName = useMemo(
-    () =>
-      user
-        ? hasConversation && otherUser && typeof otherUser !== "string"
-          ? otherUser.name
-          : "Conversation"
-        : "Guest",
-    [user, otherUser, hasConversation]
-  );
+  const conversationName = useMemo(() => {
+    if (!user || !hasConversation || typeof conversation !== "object") return "Conversation";
 
-  const conversationImage = useMemo(
-    () =>
-      user
-        ? hasConversation && otherUser && typeof otherUser !== "string"
-          ? otherUser.image
-          : "/placeholder.png"
-        : "/placeholder.png",
-    [user, otherUser, hasConversation]
-  );
+    if (conversation.isGroup) {
+      return "CodeCraft";
+    }
 
+    return otherUser && typeof otherUser !== "string" ? otherUser.name ?? "Conversation" : "Conversation";
+  }, [user, otherUser, hasConversation, conversation]);
+
+  const conversationImage = useMemo(() => {
+    if (!user || !hasConversation || typeof conversation !== "object") return "/placeholder.png";
+
+    if (conversation.isGroup) {
+      return conversation.groupImage || "/placeholder.png";
+    }
+
+    return otherUser && typeof otherUser !== "string" ? otherUser.image ?? "/placeholder.png" : "/placeholder.png";
+  }, [user, otherUser, hasConversation, conversation]);
+
+  // Show notice for unauthenticated users
+  if (isLoaded && !user) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md text-center">
+          <h2 className="text-xl font-semibold mb-4">Please Sign In</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            You need to be signed in to access the chat. Please log in or create an account to start chatting.
+          </p>
+          <div
+
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            <TryUsOutButton />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state for authenticated users while data is loading
   if (!isLoaded || conversation === undefined || me === undefined) {
     return (
       <div className="flex justify-center items-center h-screen w-full">

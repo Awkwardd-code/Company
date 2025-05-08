@@ -11,35 +11,49 @@ import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Image from "next/image";
-import Sidebar from "./Sidebar";
+import RightSidebar from "./Sidebar";
+
+// Define types for Convex query result
+interface UserProfile {
+  id: string;
+  role?: string;
+  isAdmin?: boolean;
+  tokenIdentifier: string;
+}
 
 function Header() {
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
-  const [isSticky, setIsSticky] = useState(false);
-  const headerRef = useRef(null);
+  const [isSticky, setIsSticky] = useState<boolean>(false);
+  const [isMobileScreen, setIsMobileScreen] = useState<boolean>(false);
+  const headerRef = useRef<HTMLDivElement | null>(null);
 
   const isLoggedIn = !!user?.id;
 
-  const currentUser = useQuery(
-    api.users.getUserByToken,
-    isLoggedIn
-      ? {
+  // Use Convex's type inference for the query result
+  const currentUser = useQuery(api.users.getUserByToken, isLoggedIn
+    ? {
         tokenIdentifier: user.id,
       }
-      : "skip"
-  );
-  // const showMeeting = true;
+    : "skip");
 
   const showMeeting = currentUser?.role === "client" || currentUser?.role === "programmer";
-
-  // Check if the user is an admin
   const isAdmin = currentUser?.isAdmin;
-  // const isAdmin = true;
 
+  // Detect screen size for mobile
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      const isMobile = width < 768; // sm breakpoint and below
+      setIsMobileScreen(isMobile);
+    };
 
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
-
+  // Handle sticky header on scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 10);
@@ -73,10 +87,7 @@ function Header() {
         {/* Logo */}
         <div className="flex items-center gap-4 md:gap-8">
           <Link href="/" className="flex items-center gap-4 group relative" aria-label="CodeCraft homepage">
-            {/* Hover Glow */}
             <div className="absolute -inset-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-all duration-300 blur-xl pointer-events-none" />
-
-            {/* Logo Container */}
             <div className="relative w-10 h-10 sm:w-12 sm:h-12 p-1.5 bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] rounded-xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-300 ease-in-out">
               <Image
                 src="/logo.png"
@@ -85,8 +96,6 @@ function Header() {
                 className="object-contain"
               />
             </div>
-
-            {/* Title Text */}
             <div className="flex flex-col">
               <span className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text transition-all duration-300">
                 CodeCraft
@@ -98,31 +107,26 @@ function Header() {
         {/* Navigation Links and Controls */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-medium flex-wrap md:flex-nowrap">
-            {/* Home */}
             <Link
               href="/"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
+              md:block hidden`}
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Home
               </span>
             </Link>
-
-            {/* Team */}
             <Link
               href="/team"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/team" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
+              md:block hidden`}
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Team
               </span>
             </Link>
-
-            {/* Conditional Link for Projects or Dashboard */}
             {isAdmin ? (
               <Link
                 href="/admin"
@@ -146,39 +150,33 @@ function Header() {
                 </span>
               </Link>
             )}
-
-            {/* Meetings */}
             {showMeeting && (
               <Link
                 href="/meetings"
                 className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/meetings" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
+              md:block hidden`}
               >
                 <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                   Meetings
                 </span>
               </Link>
             )}
-
-            {/* Blogs */}
             <Link
               href="/blog"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/blogs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
+              md:block hidden`}
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 Blogs
               </span>
             </Link>
-
-            {/* FAQs */}
             <Link
               href="/faqs"
               className={`relative uppercase tracking-wide transition-all duration-300 ease-in-out group whitespace-nowrap focus-visible:outline-none
               ${pathname === "/faqs" ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-400 after:via-blue-300 after:to-purple-400" : ""} 
-              md:block hidden`}  // Hide on mobile (smaller than md)
+              md:block hidden`}
             >
               <span className="relative z-10 bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text group-hover:brightness-110 transition-all duration-300 ease-in-out uppercase">
                 FAQs
@@ -186,16 +184,16 @@ function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
             <ModeToggle />
             {user ? <HeaderProfileBtn /> : <TryUsOutButton />}
-            <Sidebar/>
+            {isMobileScreen && <RightSidebar />}
           </div>
         </div>
       </div>
 
       {isSticky && (
-        <div className="bg-gradient-to-r from-[#0f0f1a] to-[#1a1a2e] backdrop-blur-xl p-4 md:p-6 mb-4 rounded-lg invisible w-full" />
+        <div className="h-20 w-full" />
       )}
     </div>
   );
