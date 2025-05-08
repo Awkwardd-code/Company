@@ -12,6 +12,9 @@ interface ProjectCardProps {
     userId: Id<"users">;
     name: string;
     url: string;
+    coverImage?: string;
+    createdAt?: number;
+    updatedAt?: number;
   };
 }
 
@@ -23,7 +26,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateProject = useMutation(api.projects.updateProject);
-  const deleteProject = useMutation(api.projects.deleteProject);
+  const deleteProject = useMutation(api.projects.remove);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -41,7 +44,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      await updateProject({ id: project._id, name: newName, url: newUrl });
+      await updateProject({
+        id: project._id,
+        name: newName,
+        url: newUrl,
+        userId: project.userId,
+        // Omit coverImage since it's not being updated in this component
+      });
       toast.success("Project updated successfully!");
       setEditMode(false);
     } catch (error) {
@@ -54,16 +63,23 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
   return (
     <div className="p-4 bg-[#2a2a3a] border border-[#313244] rounded-lg flex flex-col gap-4">
-      
       {/* Website Preview */}
       <div className="aspect-video overflow-hidden rounded-md border border-gray-700 group">
-        <iframe
-          src={project.url}
-          title={project.name}
-          loading="lazy"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-          className="w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
-        />
+        {project.coverImage ? (
+          <img
+            src={project.coverImage}
+            alt={`${project.name} cover`}
+            className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+          />
+        ) : (
+          <iframe
+            src={project.url}
+            title={project.name}
+            loading="lazy"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            className="w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
+          />
+        )}
       </div>
 
       {/* Project Info */}
