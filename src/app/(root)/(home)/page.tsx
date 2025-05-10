@@ -14,6 +14,7 @@ import SupportSection from './_components/SupportSection'
 import CTASection from './_components/CTASection'
 import Footer from '@/components/Footer'
 import ChatWidget from '@/components/ChatWidget'
+import TestimonialsSlider from '../team/_components/TestimonialsSlider'
 
 
 
@@ -26,11 +27,13 @@ function HomePage() {
             <HomeSection/>
             <FeaturedSection/>
             <PortfolioSection/>
+            
             <TestimonialSection/>
             <WhyUsSection/>
             <WhyToUsSection/>
             <BlogSection/>
             <CoreTechSection/>
+            <TestimonialsSlider/>
             <SupportSection/>
             <CTASection/>
             <ChatWidget/>

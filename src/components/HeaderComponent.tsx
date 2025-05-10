@@ -184,7 +184,7 @@ function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center gap-3 overflow-hidden px-5 py-1">
             <ModeToggle />
             {user ? <HeaderProfileBtn /> : <TryUsOutButton />}
             {isMobileScreen && <RightSidebar />}

@@ -268,6 +268,33 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = 'default' }: SidebarHe
                   </div>
                 </Link>
               </li>
+              <li className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 ${pathname.includes('blogs') && 'bg-gradient-to-r from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]'}`}>
+                <Link
+                  href="/admin/reviews"
+                  className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${pathname.includes('reviews') ? '' : 'hover:text-gray-900 dark:hover:text-white'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="grow flex items-center">
+                      <svg
+                        className={`shrink-0 fill-current ${pathname.includes('reviews') ? 'text-violet-500' : 'text-gray-400 dark:text-gray-500'}`}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 .587l3.668 7.568L24 9.423l-6 5.845L19.336 24 12 19.897 4.664 24 6 15.268 0 9.423l8.332-1.268z" />
+                      </svg>
+
+                      <span
+                        className={`text-sm font-medium ml-4 duration-200 ${sidebarExpanded ? 'lg:opacity-100' : 'lg:opacity-0'} 2xl:opacity-100 sidebar-text`}
+                      >
+                        Reviews
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+
 
 
             </ul>

@@ -22,6 +22,7 @@ import type * as interviews from "../interviews.js";
 import type * as messages from "../messages.js";
 import type * as professionals from "../professionals.js";
 import type * as projects from "../projects.js";
+import type * as supportMessages from "../supportMessages.js";
 import type * as users from "../users.js";
 
 /**
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   professionals: typeof professionals;
   projects: typeof projects;
+  supportMessages: typeof supportMessages;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

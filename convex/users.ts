@@ -1,8 +1,13 @@
 import { ConvexError, v } from "convex/values";
+import { QueryCtx } from "./_generated/server";
 import { internalMutation, mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { Doc } from "./_generated/dataModel";
 
-
+export interface UserImage {
+    userId: string;
+    image: string | null;
+}
 
 export const createUser = internalMutation({
     args: {
@@ -68,6 +73,28 @@ export const getUsers = query({
     },
 });
 
+export const getUserImages = query({
+    args: {
+        userIds: v.array(v.string()),
+    },
+    handler: async (ctx: QueryCtx, args: { userIds: string[] }): Promise<UserImage[]> => {
+        const userImages = await Promise.all(
+            args.userIds.map(async (userId) => {
+                const user = await ctx.db
+                    .query("users")
+                    .filter((q) => q.eq(q.field("_id"), userId))
+                    .first();
+                // Debug: Log user lookup
+                console.log(`User ID: ${userId}, User Found: ${!!user}, Image: ${user?.image || "null"}`);
+                return {
+                    userId,
+                    image: user?.image || null,
+                };
+            })
+        );
+        return userImages;
+    },
+});
 
 export const getMe = query({
     args: {},

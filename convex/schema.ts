@@ -75,4 +75,18 @@ export default defineSchema({
     .index("by_candidate_id", ["candidateId"])
     .index("by_stream_call_id", ["streamCallId"]),
 
+  supportMessages: defineTable({
+    userId: v.id("users"), // Changed from v.string() to v.id("users")
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    subject: v.string(),
+    message: v.string(),
+    rating: v.number(),
+    termsAccepted: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_createdAt", ["createdAt"])
+    .index("by_userId", ["userId"]),
+
 });

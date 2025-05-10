@@ -57,7 +57,7 @@ const PortfolioSection: React.FC = () => {
           data-wow-delay=".2s"
         >
           <span className="absolute top-0 left-1/2 -translate-x-1/2 text-[40px] sm:text-[60px] lg:text-[95px] leading-[1] font-extrabold opacity-20 bg-gradient-to-b from-[rgba(74,108,247,0.4)] to-[rgba(74,108,247,0)] bg-clip-text text-transparent">
-            Producsts
+            PRODUCTS
           </span>
           <h2 className="font-heading text-dark mb-5 text-3xl font-semibold sm:text-4xl md:text-[50px] md:leading-[60px] dark:text-white">
 

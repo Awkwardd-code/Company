@@ -10,8 +10,8 @@ const FeaturedSection = () => {
           <path opacity="0.5" d="M29.3333 14.6667H40.3333V38.5H29.3333V14.6667Z" />
         </svg>
       ),
-      title: 'Crafted for Startups',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Startup-Focused Solutions',
+      description: 'We specialize in accelerating startup growth with tailored strategies and cutting-edge technology.',
       delay: '.2s',
     },
     {
@@ -21,8 +21,8 @@ const FeaturedSection = () => {
           <path opacity="0.5" d="M36.8189 19.2501L39.0226 20.5719C39.1585 20.6533 39.271 20.7685 39.3492 20.9064C39.4273 21.0442 39.4684 21.1999 39.4684 21.3584C39.4684 21.5168 39.4273 21.6726 39.3492 21.8104C39.271 21.9483 39.1585 22.0635 39.0226 22.1449L22.0001 32.3584L4.97756 22.1449C4.84161 22.0635 4.72908 21.9483 4.65094 21.8104C4.57281 21.6726 4.53174 21.5168 4.53174 21.3584C4.53174 21.1999 4.57281 21.0442 4.65094 20.9064C4.72908 20.7685 4.84161 20.6533 4.97756 20.5719L7.18123 19.2501L22.0001 28.1417L36.8189 19.2501ZM36.8189 27.8667L39.0226 29.1886C39.1585 29.2699 39.271 29.3852 39.3492 29.523C39.4273 29.6609 39.4684 29.8166 39.4684 29.9751C39.4684 30.1335 39.4273 30.2893 39.3492 30.4271C39.271 30.5649 39.1585 30.6802 39.0226 30.7616L22.9442 40.4086C22.6591 40.5799 22.3327 40.6704 22.0001 40.6704C21.6674 40.6704 21.341 40.5799 21.0559 40.4086L4.97756 30.7616C4.84161 30.6802 4.72908 30.5649 4.65094 30.4271C4.57281 30.2893 4.53174 30.1335 4.53174 29.9751C4.53174 29.8166 4.57281 29.6609 4.65094 29.523C4.72908 29.3852 4.84161 29.2699 4.97756 29.1886L7.18123 27.8667L22.0001 36.7584L36.8189 27.8667Z" />
         </svg>
       ),
-      title: 'High-quality Design',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Premium Design Quality',
+      description: 'Our contemporary designs elevate your brand with unique, visually impressive solutions that stand out.',
       delay: '.25s',
     },
     {
@@ -32,8 +32,8 @@ const FeaturedSection = () => {
           <path opacity="0.5" d="M38.5 11H5.5V5.49996C5.5 5.01373 5.69315 4.54741 6.03697 4.2036C6.38079 3.85978 6.8471 3.66663 7.33333 3.66663H36.6667C37.1529 3.66663 37.6192 3.85978 37.963 4.2036C38.3068 4.54741 38.5 5.01373 38.5 5.49996V11Z" />
         </svg>
       ),
-      title: 'All Essential Sections',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Business Growth Framework',
+      description: 'We offer complimentary marketing services designed to maximize your business potential and drive success.',
       delay: '.3s',
     },
     {
@@ -43,8 +43,8 @@ const FeaturedSection = () => {
           <path opacity="0.5" d="M22 9.16663C23.8663 9.16663 25.6391 9.56446 27.2396 10.2813L24.3741 13.145C23.617 12.9433 22.8213 12.8333 22 12.8333C16.9381 12.8333 12.8333 16.9381 12.8333 22C12.8333 24.53 13.86 26.8216 15.5173 28.4826L12.925 31.075L12.639 30.7798C10.4866 28.4845 9.16663 25.3953 9.16663 22C9.16663 14.9123 14.9123 9.16663 22 9.16663ZM33.7186 16.7621C34.4336 18.3608 34.8333 20.1355 34.8333 22C34.8333 25.5438 33.396 28.7521 31.075 31.075L28.4826 28.4826C30.14 26.8216 31.1666 24.53 31.1666 22C31.1666 21.1786 31.0585 20.383 30.855 19.6258L33.7186 16.7621Z" />
         </svg>
       ),
-      title: 'Speed Optimized',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Performance Optimization',
+      description: 'We prioritize lightning-fast performance to deliver exceptional user experiences and maximize engagement.',
       delay: '.35s',
     },
     {
@@ -54,8 +54,8 @@ const FeaturedSection = () => {
           <path opacity="0.5" d="M29.3334 38.5V18.3334H38.5V36.6667C38.5 37.1529 38.3069 37.6193 37.9631 37.9631C37.6193 38.3069 37.1529 38.5 36.6667 38.5H29.3334Z" />
         </svg>
       ),
-      title: 'Fully Customizable',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Tailored Customization',
+      description: 'Our solutions are fully adaptable to meet your specific requirements and business objectives.',
       delay: '.4s',
     },
     {
@@ -65,8 +65,8 @@ const FeaturedSection = () => {
           <path d="M33.9843 35.8729C30.6576 38.7555 26.4017 40.3395 21.9998 40.3333C11.8743 40.3333 3.6665 32.1255 3.6665 22C3.6665 18.084 4.89484 14.454 6.98484 11.4767L12.8332 22H7.33317C7.33293 24.8754 8.17788 27.6874 9.76295 30.0864C11.348 32.4854 13.6033 34.3656 16.2483 35.4931C18.8934 36.6207 21.8115 36.9459 24.6399 36.4283C27.4683 35.9107 30.0822 34.5732 32.1565 32.582L33.9843 35.8729Z" />
         </svg>
       ),
-      title: 'Regular Updates',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.',
+      title: 'Continuous Improvement',
+      description: 'Our team of expert developers ensures regular updates and maintenance for optimal performance.',
       delay: '.45s',
     },
   ];
@@ -96,7 +96,7 @@ const FeaturedSection = () => {
             Our Unique & Awesome Core Features
           </h2>
           <p className="text-dark-text text-base">
-          Discover powerful features: intuitive design, seamless integration, robust security, and scalable solutions to elevate your business with cutting-edge technology.
+            Discover powerful features: intuitive design, seamless integration, robust security, and scalable solutions to elevate your business with cutting-edge technology.
           </p>
         </div>
 
