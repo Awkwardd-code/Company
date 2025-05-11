@@ -53,7 +53,7 @@ http.route({
 
       switch (type) {
         case "user.created": {
-          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`.replace(/^https?:\/\//, "");
+          /* const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`.replace(/^https?:\/\//, "");
           const existing = await ctx.runQuery(getUserByTokenIdentifierQuery, {
             tokenIdentifier,
           });
@@ -68,12 +68,24 @@ http.route({
             email: data.email_addresses?.[0]?.email_address ?? "",
             name: `${data.first_name ?? "Guest"} ${data.last_name ?? ""}`.trim(),
             image: data.image_url,
+          }); */
+          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`;
+          await ctx.runMutation(internal.users.createUser, {
+            tokenIdentifier,
+            email: data.email_addresses?.[0]?.email_address,
+            name: `${data.first_name ?? "Guest"} ${data.last_name ?? ""}`,
+            image: data.image_url,
           });
           break;
         }
 
         case "user.updated": {
-          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`.replace(/^https?:\/\//, "");
+          /* const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`.replace(/^https?:\/\//, "");
+          await ctx.runMutation(internal.users.updateUser, {
+            tokenIdentifier,
+            image: data.image_url,
+          }); */
+          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${data.id}`;
           await ctx.runMutation(internal.users.updateUser, {
             tokenIdentifier,
             image: data.image_url,
@@ -82,7 +94,7 @@ http.route({
         }
 
         case "session.created": {
-          const sessionData = data as WebhookEvent["data"] & { user_id: string };
+          /* const sessionData = data as WebhookEvent["data"] & { user_id: string };
           const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${sessionData.user_id}`.replace(/^https?:\/\//, "");
 
           const userExists = await ctx.runQuery(getUserByTokenIdentifierQuery, {
@@ -96,13 +108,24 @@ http.route({
 
           await ctx.runMutation(internal.users.setUserOnline, {
             tokenIdentifier,
+          }); */
+          const sessionData = data as WebhookEvent["data"] & { user_id: string };
+          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${sessionData.user_id}`;
+          await ctx.runMutation(internal.users.setUserOnline, {
+            tokenIdentifier,
           });
           break;
         }
 
         case "session.removed": {
-          const sessionData = data as WebhookEvent["data"] & { user_id: string };
+          /* const sessionData = data as WebhookEvent["data"] & { user_id: string };
           const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${sessionData.user_id}`.replace(/^https?:\/\//, "");
+          console.log("👋 Session ended for:", tokenIdentifier);
+          await ctx.runMutation(internal.users.setUserOffline, {
+            tokenIdentifier,
+          }); */
+          const sessionData = data as WebhookEvent["data"] & { user_id: string };
+          const tokenIdentifier = `${process.env.CLERK_APP_DOMAIN}|${sessionData.user_id}`;
           console.log("👋 Session ended for:", tokenIdentifier);
           await ctx.runMutation(internal.users.setUserOffline, {
             tokenIdentifier,

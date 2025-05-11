@@ -27,7 +27,6 @@ function HomePage() {
             <HomeSection/>
             <FeaturedSection/>
             <PortfolioSection/>
-            
             <TestimonialSection/>
             <WhyUsSection/>
             <WhyToUsSection/>
