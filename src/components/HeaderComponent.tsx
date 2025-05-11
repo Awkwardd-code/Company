@@ -91,14 +91,14 @@ function Header() {
             <div className="relative w-10 h-10 sm:w-12 sm:h-12 p-1.5 bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] rounded-xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-300 ease-in-out">
               <Image
                 src="/logo.png"
-                alt="CodeCraft Logo"
+                alt="CraftCode Logo"
                 fill
                 className="object-contain"
               />
             </div>
             <div className="flex flex-col">
               <span className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text transition-all duration-300">
-                CodeCraft
+                CraftCode
               </span>
             </div>
           </Link>
